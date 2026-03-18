@@ -1,0 +1,51 @@
+{
+  // Use Prettier for formatting, ESLint for linting only
+  "prettier.enable": true,
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[vue]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[javascript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[jsonc]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[scss]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[css]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[html]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  // ESLint only fixes linting issues, not formatting
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "never"
+  },
+  // https://github.com/tailwindlabs/tailwindcss/discussions/5258
+  "css.customData": [
+    ".vscode/tailwind.json"
+  ],
+  "tailwindCSS.experimental.classRegex": [
+    // https://github.com/lukeed/clsx?tab=readme-ov-file#tailwind-support
+    [
+      "clsx\\(([^)]*)\\)",
+      "(?:'|\"|`)([^']*)(?:'|\"|`)"
+    ],
+    // https://cva.style/docs/getting-started/installation
+    [
+      "cva\\(([^)]*)\\)",
+      "[\"'`]([^\"'`]*).*?[\"'`]"
+    ],
+    [
+      "cx\\(([^)]*)\\)",
+      "(?:'|\"|`)([^']*)(?:'|\"|`)"
+    ]
+  ],
+  // Only validate file types actually used in this project
+  "eslint.validate": [
+    "javascript",
+    "typescript",
+    "vue"
+  ],
+  // Only run ESLint on save, not on every keystroke
+  "eslint.run": "onSave",
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
+  "stylelint.enable": false
+}
