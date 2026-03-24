@@ -1,82 +1,127 @@
-<script setup lang="ts">
-import { useLogin } from '@/hooks/useLogin'
-
-const { login, getPhoneNumber, bindMobileVisible } = useLogin()
-</script>
-
 <template>
-  <view class="login-page">
-    <!-- 顶部装饰 -->
-
-    <!-- 主体内容 -->
-    <view class="content">
-      <!-- Logo 区域 -->
-      <view class="logo-wrap">
-        <view class="logo">
-          <text class="logo-icon">🚗</text>
+  <AppContainer>
+    <view class="login-page">
+      <!-- 主体内容 -->
+      <view class="content">
+        <!-- Logo 区域 -->
+        <view class="logo-wrap">
+          <view class="logo">
+            <text class="logo-icon">🚗</text>
+          </view>
+          <text class="app-name">轩科施工管理端</text>
+          <text class="app-desc">专业的汽车美容店管理助手</text>
         </view>
-        <text class="app-name">轩科施工管理端</text>
-        <text class="app-desc">专业的汽车美容店管理助手</text>
+
+        <!-- 登录表单 -->
+        <view class="form">
+          <view class="form-item">
+            <view class="form-item__prefix">
+              <text class="i-mdi-account text-[42rpx] text-[#333]"></text>
+            </view>
+            <nut-input
+              v-model="loginParams.account"
+              type="text"
+              class="form-item__input"
+              placeholder="请输入账号"
+              placeholder-class="input-placeholder"
+              :cursor-spacing="20"
+              :maxlength="20"
+            />
+          </view>
+
+          <view class="form-item">
+            <view class="form-item__prefix">
+              <text class="i-mdi-lock-outline text-[42rpx] text-[#333]"></text>
+            </view>
+            <nut-input
+              v-model="loginParams.password"
+              class="form-item__input"
+              placeholder="请输入密码"
+              placeholder-class="input-placeholder"
+              :cursor-spacing="20"
+              :password="showPassword"
+              :maxlength="20"
+            />
+
+            <view class="form-item__suffix" @click="showPassword = !showPassword">
+              <nut-icon custom-color="#333" :name="showPassword ? 'marshalling' : 'eye'" />
+            </view>
+          </view>
+
+          <nut-button
+            block
+            type="primary"
+            size="large"
+            custom-color="linear-gradient(135deg, #2bf073, #22c55e)"
+            :loading="loading"
+            :disabled="loading"
+            @click="login"
+          >
+            {{ loading ? '登录中...' : '登录' }}
+          </nut-button>
+        </view>
       </view>
 
-      <!-- 特性说明 -->
-      <view class="features">
-        <view class="feature-item">
-          <text class="feature-icon">📊</text>
-          <text class="feature-text">订单管理一目了然</text>
-        </view>
-        <view class="feature-item">
-          <text class="feature-icon">💰</text>
-          <text class="feature-text">结算数据实时追踪</text>
-        </view>
-        <view class="feature-item">
-          <text class="feature-icon">🔔</text>
-          <text class="feature-text">售后提醒及时处理</text>
-        </view>
+      <!-- 底部版权 -->
+      <view class="footer">
+        <text class="privacy-text">
+          登录即代表同意
+          <text class="privacy-link">《用户协议》</text>
+          和
+          <text class="privacy-link">《隐私政策》</text>
+        </text>
       </view>
     </view>
-
-    <!-- 底部登录区 -->
-    <view class="login-footer">
-      <button class="login-btn" open-type="getUserInfo" @click="login">
-        <text class="btn-text">立即登录</text>
-      </button>
-
-      <text class="privacy-text">
-        登录即代表同意
-        <text class="privacy-link">《用户协议》</text>
-        和
-        <text class="privacy-link">《隐私政策》</text>
-      </text>
-    </view>
-
-    <BindMobile v-model:visible="bindMobileVisible" :get-phone-number="getPhoneNumber" />
-  </view>
+  </AppContainer>
 </template>
+
+<script setup lang="ts">
+import { debounce } from 'lodash-es'
+import { loginRes } from '@/api'
+import { useAppStore } from '@/stores/app'
+
+const appStore = useAppStore()
+
+const loginParams = ref<ILoginReqData>({
+  account: '15895347201',
+  password: '123456',
+})
+const showPassword = ref(false)
+const loading = ref(false)
+
+const login = debounce(async () => {
+  try {
+    loading.value = true
+    const data = await loginRes(loginParams.value)
+    appStore.setAppToken(data.token)
+    appStore.setAppUser(data)
+    uni.reLaunch({ url: '/pages/home/index' })
+  } finally {
+    loading.value = false
+  }
+}, 500)
+</script>
 
 <style lang="scss" scoped>
 .login-page {
-  position: relative;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  overflow: hidden;
-  background: #f5f6fa;
+  justify-content: center;
 
   .content {
+    padding: 0 80rpx;
     display: flex;
     flex: 1;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 0 80rpx;
-    padding-top: 160rpx;
 
     .logo-wrap {
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-bottom: 96rpx;
+      margin-bottom: 80rpx;
 
       .logo {
         display: flex;
@@ -86,7 +131,7 @@ const { login, getPhoneNumber, bindMobileVisible } = useLogin()
         height: 160rpx;
         margin-bottom: 40rpx;
         font-size: 80rpx;
-        background: linear-gradient(135deg, #22c55e, #11cc56);
+        background: linear-gradient(135deg, #2bf073, #22c55e, #1da54f);
         border-radius: 40rpx;
         box-shadow: 0 20rpx 60rpx rgba(34, 197, 94, 0.2);
       }
@@ -105,76 +150,86 @@ const { login, getPhoneNumber, bindMobileVisible } = useLogin()
       }
     }
 
-    .features {
-      display: flex;
-      flex-direction: column;
-      gap: 28rpx;
+    .form {
       width: 100%;
 
-      .feature-item {
+      :deep() {
+        button {
+          box-shadow: 0 16rpx 48rpx rgba(34, 197, 94, 0.3);
+          font-size: 32rpx;
+          font-weight: 550;
+        }
+      }
+
+      .form-item {
         display: flex;
-        gap: 24rpx;
         align-items: center;
-        padding: 28rpx 36rpx;
+        height: 104rpx;
+        padding: 0 32rpx;
+        margin-bottom: 42rpx;
         background: #fff;
         border-radius: 20rpx;
         box-shadow: 0 4rpx 24rpx rgb(0 0 0 / 5%);
 
-        .feature-icon {
-          font-size: 40rpx;
+        :deep() {
+          .nut-input {
+            height: 100% !important;
+            padding: 0 !important;
+          }
+          .nut-input--border {
+            border: none !important;
+          }
+
+          .nut-input__value {
+            font-size: 30rpx;
+            color: #1a1a2e;
+          }
+
+          .input-placeholder {
+            color: #c8cacc;
+            font-size: 30rpx;
+          }
         }
 
-        .feature-text {
-          font-size: 30rpx;
-          font-weight: 500;
-          color: #374151;
+        &__prefix {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 56rpx;
+          margin-right: 20rpx;
+          flex-shrink: 0;
         }
+
+        &__input {
+          flex: 1;
+          height: 100%;
+        }
+
+        &__suffix {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 56rpx;
+          margin-left: 20rpx;
+          flex-shrink: 0;
+        }
+
+        &__eye {
+          font-size: 36rpx;
+        }
+      }
+
+      .login-btn {
+        box-shadow: 0 16rpx 48rpx rgba(34, 197, 94, 0.3);
+        transition: opacity 0.2s;
       }
     }
   }
 
-  .login-footer {
+  .footer {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 0 80rpx 80rpx;
-    padding-bottom: calc(80rpx + env(safe-area-inset-bottom));
-
-    .login-btn {
-      display: flex;
-      gap: 16rpx;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      height: 104rpx;
-      margin-bottom: 32rpx;
-      font-size: 34rpx;
-      font-weight: 600;
-      color: #fff;
-      background: linear-gradient(135deg, #22c55e, #15c455);
-      border: none;
-      border-radius: 52rpx;
-      box-shadow: 0 16rpx 48rpx rgba(34, 197, 94, 0.3);
-      transition: opacity 0.2s;
-
-      &::after {
-        border: none;
-      }
-
-      &.loading {
-        opacity: 0.7;
-      }
-
-      .btn-icon {
-        font-size: 36rpx;
-      }
-
-      .btn-text {
-        font-size: 34rpx;
-        font-weight: 600;
-        color: #fff;
-      }
-    }
+    justify-content: center;
+    padding: 40rpx 80rpx;
 
     .privacy-text {
       font-size: 24rpx;

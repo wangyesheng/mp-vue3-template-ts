@@ -39,3 +39,19 @@ export async function checkLoginRes(data: CheckLoginParams): Promise<CheckLoginR
     data,
   })
 }
+
+export async function loginRes(data: ILoginReqData): Promise<IUserInfo> {
+  return request({
+    url: '/api/user/account_login',
+    method: 'post',
+    data,
+  })
+}
+
+export async function getOrdersRes(data: IPage): Promise<any> {
+  return request({
+    url: 'api/order/list',
+    method: 'get',
+    data,
+  })
+}

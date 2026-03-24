@@ -1,3 +1,12 @@
+<template>
+  <nut-config-provider theme="light" :theme-vars="themeVars">
+    <div class="app-contanier" :class="[customClass]">
+      <nut-toast />
+      <slot />
+    </div>
+  </nut-config-provider>
+</template>
+
 <script setup lang="ts">
 defineProps({
   customClass: {
@@ -13,20 +22,12 @@ const themeVars = reactive({
 })
 </script>
 
-<template>
-  <nut-config-provider :theme-vars="themeVars">
-    <div class="app-contanier" :class="[customClass]">
-      <nut-toast />
-      <slot />
-    </div>
-  </nut-config-provider>
-</template>
-
 <style lang="scss">
 .app-contanier {
   position: relative;
   width: 100%;
   min-height: 100vh;
+  height: 100vh;
   overflow-x: hidden;
   padding-bottom: calc(50rpx + env(safe-area-inset-bottom));
 }

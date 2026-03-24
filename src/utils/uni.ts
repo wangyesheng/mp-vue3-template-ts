@@ -16,12 +16,12 @@ export function copy(content: string, tips = '复制成功') {
 }
 
 export function navTo(url: string, needToken = true) {
-  if (needToken) {
-    const appUser = uni.getStorageSync('APP_USER') || {}
-    if (!appUser.id) {
-      return toast('请授权登录')
-    }
-  }
+  // if (needToken) {
+  //   const appUser = uni.getStorageSync('APP_USER') || {}
+  //   if (!appUser.id) {
+  //     return toast('请授权登录')
+  //   }
+  // }
 
   uni.navigateTo({
     url,

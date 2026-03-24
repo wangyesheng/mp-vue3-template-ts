@@ -1,17 +1,3 @@
-<script setup>
-const props = defineProps({
-  visible: {
-    type: Boolean,
-    default: false,
-  },
-  getPhoneNumber: {
-    type: [Function, null],
-    default: null,
-  },
-})
-const emits = defineEmits(['update:visible'])
-</script>
-
 <template>
   <nut-popup
     round
@@ -48,6 +34,20 @@ const emits = defineEmits(['update:visible'])
     </div>
   </nut-popup>
 </template>
+
+<script setup>
+const props = defineProps({
+  visible: {
+    type: Boolean,
+    default: false,
+  },
+  getPhoneNumber: {
+    type: [Function, null],
+    default: null,
+  },
+})
+const emits = defineEmits(['update:visible'])
+</script>
 
 <style lang="scss" scoped>
 :deep(.bind-mobile-popup) {

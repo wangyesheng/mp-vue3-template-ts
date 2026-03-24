@@ -1,3 +1,28 @@
+<template>
+  <view
+    class="rounded-[32rpx] border border-slate-100/70 bg-white/80 p-5 shadow-[0_20px_40px_rgba(15,23,42,0.08)] backdrop-blur-xl"
+  >
+    <view class="text-xs uppercase tracking-[6rpx] text-slate-400"> 能力速览 </view>
+    <view class="text-2xl font-semibold text-slate-800"> 一份模板，串联更多设计场景 </view>
+    <view class="mt-4 flex flex-col gap-4 md:grid md:grid-cols-3">
+      <view
+        v-for="shot in timelineShots"
+        :key="shot.title"
+        class="rounded-[24rpx] border px-4 py-3 text-sm leading-relaxed"
+        :class="shot.tone"
+      >
+        <view class="flex items-center gap-2 font-semibold">
+          <text class="text-[30px]" :class="[shot.icon]" />
+          <view>{{ shot.title }}</view>
+        </view>
+        <view class="mt-2 text-[26rpx] opacity-80">
+          {{ shot.detail }}
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
 <script setup lang="ts">
 const timelineShots = [
   {
@@ -20,40 +45,3 @@ const timelineShots = [
   },
 ]
 </script>
-
-<template>
-  <view
-    class="
-      rounded-[32rpx] border border-slate-100/70 bg-white/80 p-5
-      shadow-[0_20px_40px_rgba(15,23,42,0.08)] backdrop-blur-xl
-    "
-  >
-    <view class="text-xs uppercase tracking-[6rpx] text-slate-400">
-      能力速览
-    </view>
-    <view class="text-2xl font-semibold text-slate-800">
-      一份模板，串联更多设计场景
-    </view>
-    <view
-      class="
-        mt-4 flex flex-col gap-4
-        md:grid md:grid-cols-3
-      "
-    >
-      <view
-        v-for="shot in timelineShots"
-        :key="shot.title"
-        class="rounded-[24rpx] border px-4 py-3 text-sm leading-relaxed"
-        :class="shot.tone"
-      >
-        <view class="flex items-center gap-2 font-semibold">
-          <text class="text-[30px]" :class="[shot.icon]" />
-          <view>{{ shot.title }}</view>
-        </view>
-        <view class="mt-2 text-[26rpx] opacity-80">
-          {{ shot.detail }}
-        </view>
-      </view>
-    </view>
-  </view>
-</template>

@@ -15,12 +15,18 @@ declare module 'vue' {
     HeroShowcase: typeof import('./src/components/sections/HeroShowcase.vue')['default']
     IconGallery: typeof import('./src/components/sections/IconGallery.vue')['default']
     MacroShowcase: typeof import('./src/components/sections/MacroShowcase.vue')['default']
+    MonthSwitcher: typeof import('./src/components/MonthSwitcher/index.vue')['default']
     NutButton: typeof import('nutui-uniapp/components/button/button.vue')['default']
+    NutCheckbox: typeof import('nutui-uniapp/components/checkbox/checkbox.vue')['default']
+    NutCheckboxGroup: typeof import('nutui-uniapp/components/checkboxgroup/checkboxgroup.vue')['default']
     NutConfigProvider: typeof import('nutui-uniapp/components/configprovider/configprovider.vue')['default']
+    NutIcon: typeof import('nutui-uniapp/components/icon/icon.vue')['default']
+    NutInput: typeof import('nutui-uniapp/components/input/input.vue')['default']
     NutPopup: typeof import('nutui-uniapp/components/popup/popup.vue')['default']
     NutTabPane: typeof import('nutui-uniapp/components/tabpane/tabpane.vue')['default']
     NutTabs: typeof import('nutui-uniapp/components/tabs/tabs.vue')['default']
     NutToast: typeof import('nutui-uniapp/components/toast/toast.vue')['default']
+    Summary: typeof import('./src/components/Summary/index.vue')['default']
     WeappTailwindcss: typeof import('./src/components/WeappTailwindcss.vue')['default']
   }
 }

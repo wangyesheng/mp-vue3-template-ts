@@ -1,8 +1,8 @@
 import { checkLoginRes, decryUserPhoneRes } from '@/api'
-import { useAuthStore } from '@/stores/auth'
+import { useAppStore } from '@/stores/app'
 
 export function useLogin(cb?: () => void) {
-  const appStore = useAuthStore()
+  const appStore = useAppStore()
   const bindMobileVisible = ref(false)
   let bindMobileUserProfile: Record<string, any> = {}
 
@@ -13,7 +13,9 @@ export function useLogin(cb?: () => void) {
       avatar: bindMobileUserProfile.current.avatarUrl,
       mobile: phoneInfo.phoneNumber,
     }
-    const { userinfo: { token } } = await checkLoginRes(reqData)
+    const {
+      userinfo: { token },
+    } = await checkLoginRes(reqData)
     appStore.setAppToken(token)
     await appStore.refreshAppUser()
     bindMobileVisible.value = false
@@ -21,7 +23,9 @@ export function useLogin(cb?: () => void) {
   }
 
   async function getPhoneNumber(result: { detail: GetPhoneNumberDetail }) {
-    const { detail: { encryptedData: encrypted_data, iv } } = result
+    const {
+      detail: { encryptedData: encrypted_data, iv },
+    } = result
     const { data, openid } = await decryUserPhoneRes({
       encrypted_data,
       iv,
@@ -61,15 +65,13 @@ export function useLogin(cb?: () => void) {
         }
         bindMobileVisible.value = true
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.log('debugger::error_login', error)
       uni.showToast({
         title: '微信登录授权失败',
         icon: 'none',
       })
-    }
-    finally {
+    } finally {
       uni.hideLoading()
     }
   }

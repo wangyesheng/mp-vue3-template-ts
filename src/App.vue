@@ -1,36 +1,39 @@
 <script setup lang="ts">
-import { useAuthStore } from '@/stores/auth'
+// import { useAppStore } from '@/stores/app'
 
-const LOGIN_PAGE = '/pages/login/index'
-const WHITE_LIST = [LOGIN_PAGE]
+// const LOGIN_PAGE = '/pages/login/index'
+// const WHITE_LIST = [LOGIN_PAGE]
 
-function createAuthInterceptor(type: string) {
-  uni.addInterceptor(type, {
-    invoke(args: { url: string }) {
-      const path = args.url.split('?')[0]
-      if (WHITE_LIST.some(p => path.endsWith(p))) { return }
-      const authStore = useAuthStore()
-      if (!authStore.isLoggedIn) {
-        uni.reLaunch({ url: LOGIN_PAGE })
-        return false
-      }
-    },
-  })
-}
+// function createAuthInterceptor(type: string) {
+//   uni.addInterceptor(type, {
+//     invoke(args: { url: string }) {
+//       console.log('app - invoke')
+
+//       const path = args.url.split('?')[0]
+//       if (WHITE_LIST.some((p) => path.endsWith(p))) {
+//         return
+//       }
+//       const appStore = useAppStore()
+//       if (!appStore.appToken) {
+//         uni.reLaunch({ url: LOGIN_PAGE })
+//         return false
+//       }
+//     },
+//   })
+// }
 
 onLaunch(() => {
-  const authStore = useAuthStore()
-
-  // 注册路由拦截
-  createAuthInterceptor('navigateTo')
-  createAuthInterceptor('redirectTo')
-  createAuthInterceptor('reLaunch')
-  createAuthInterceptor('switchTab')
-
-  // 启动时检查登录状态
-  if (!authStore.isLoggedIn) {
-    uni.reLaunch({ url: LOGIN_PAGE })
-  }
+  // const appStore = useAppStore()
+  // // 注册路由拦截
+  // createAuthInterceptor('navigateTo')
+  // createAuthInterceptor('redirectTo')
+  // createAuthInterceptor('reLaunch')
+  // createAuthInterceptor('switchTab')
+  // // 启动时检查登录状态
+  // if (!appStore.appToken) {
+  //   console.log('app - onLaunch')
+  //   uni.reLaunch({ url: LOGIN_PAGE })
+  // }
 })
 </script>
 
@@ -51,7 +54,7 @@ svg {
 @layer components {
   .raw-btn {
     // 注意 after: 后面不能加任何空格，有些格式化工具可能会在这里自动加一个空格
-    @apply after:border-none inline-flex items-center gap-2 rounded text-sm font-semibold transition-all;
+    @apply inline-flex items-center gap-2 rounded text-sm font-semibold transition-all after:border-none;
   }
 
   .btn {

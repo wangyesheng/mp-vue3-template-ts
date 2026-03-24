@@ -2,7 +2,9 @@
  * 验证电子邮箱格式
  */
 function email(value: string): boolean {
-  return /[\w!#$%&'*+/=?^`{|}~-]+(?:\.[\w!#$%&'*+/=?^`{|}~-]+)*@(?:\w(?:[\w-]*\w)?\.)+\w(?:[\w-]*\w)?/.test(value)
+  return /[\w!#$%&'*+/=?^`{|}~-]+(?:\.[\w!#$%&'*+/=?^`{|}~-]+)*@(?:\w(?:[\w-]*\w)?\.)+\w(?:[\w-]*\w)?/.test(
+    value,
+  )
 }
 
 /**
@@ -59,16 +61,16 @@ function idCard(value: string): boolean {
  */
 function carNo(value: string): boolean {
   // 新能源车牌
-  const xreg = /^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z][A-Z](?:\d{5}[DF]$|[DF][A-HJ-NP-Z0-9]\d{4}$)/
+  const xreg =
+    /^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z][A-Z](?:\d{5}[DF]$|[DF][A-HJ-NP-Z0-9]\d{4}$)/
   // 旧车牌
-  const creg = /^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z][A-Z][A-HJ-NP-Z0-9]{4}[A-HJ-NP-Z0-9挂学警港澳]$/
+  const creg =
+    /^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z][A-Z][A-HJ-NP-Z0-9]{4}[A-HJ-NP-Z0-9挂学警港澳]$/
   if (value.length === 7) {
     return creg.test(value)
-  }
-  else if (value.length === 8) {
+  } else if (value.length === 8) {
     return xreg.test(value)
-  }
-  else {
+  } else {
     return false
   }
 }
@@ -169,12 +171,10 @@ function jsonString(value: unknown): boolean {
       const obj = JSON.parse(value)
       if (typeof obj === 'object' && obj) {
         return true
-      }
-      else {
+      } else {
         return false
       }
-    }
-    catch {
+    } catch {
       return false
     }
   }

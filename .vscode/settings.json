@@ -11,37 +11,26 @@
   "[scss]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
   "[css]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
   "[html]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
-  // ESLint only fixes linting issues, not formatting
+  // 保存时执行顺序：① ESLint 修结构 → ② Prettier 格式化
+  // VS Code 保证 codeActionsOnSave 先于 formatOnSave 执行
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit",
     "source.organizeImports": "never"
   },
+  // ESLint 工作区缓存，减少重复验证时间
+  "eslint.useESLintClass": true,
+  "eslint.workingDirectories": [{ "mode": "auto" }],
   // https://github.com/tailwindlabs/tailwindcss/discussions/5258
-  "css.customData": [
-    ".vscode/tailwind.json"
-  ],
+  "css.customData": [".vscode/tailwind.json"],
   "tailwindCSS.experimental.classRegex": [
     // https://github.com/lukeed/clsx?tab=readme-ov-file#tailwind-support
-    [
-      "clsx\\(([^)]*)\\)",
-      "(?:'|\"|`)([^']*)(?:'|\"|`)"
-    ],
+    ["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"],
     // https://cva.style/docs/getting-started/installation
-    [
-      "cva\\(([^)]*)\\)",
-      "[\"'`]([^\"'`]*).*?[\"'`]"
-    ],
-    [
-      "cx\\(([^)]*)\\)",
-      "(?:'|\"|`)([^']*)(?:'|\"|`)"
-    ]
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
   ],
   // Only validate file types actually used in this project
-  "eslint.validate": [
-    "javascript",
-    "typescript",
-    "vue"
-  ],
+  "eslint.validate": ["javascript", "typescript", "vue"],
   // Only run ESLint on save, not on every keystroke
   "eslint.run": "onSave",
   "css.validate": false,

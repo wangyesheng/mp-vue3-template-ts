@@ -7,6 +7,24 @@
       }
     },
     {
+      "path": "pages/invoice/index",
+      "style": {
+        "navigationBarTitleText": "发票管理"
+      }
+    },
+    {
+      "path": "pages/completion/index",
+      "style": {
+        "navigationBarTitleText": "施工完成确认"
+      }
+    },
+    {
+      "path": "pages/settlement/index",
+      "style": {
+        "navigationBarTitleText": "结算明细"
+      }
+    },
+    {
       "path": "pages/login/index",
       "style": {
         "navigationBarTitleText": "登录",

@@ -1,4 +1,4 @@
-import { useAuthStore } from '@/stores/auth'
+import { useAppStore } from '@/stores/app'
 import http from './http'
 import { toast } from './uni'
 
@@ -23,7 +23,7 @@ http.setConfig({
 })
 
 http.interceptor.request = (config) => {
-  const token = uni.getStorageSync('APP_TOKEN')
+  const token = uni.getStorageSync('app_token')
   if (token) {
     config.header = config.header ?? {}
     config.header.token = token
@@ -34,12 +34,11 @@ http.interceptor.request = (config) => {
 // 响应拦截器：从 { code, data } 中提取业务数据
 // 拦截器返回的 data 就是 .then(result) 接收到的值
 // 所以泛型 T 代表的是 data 的类型，而非原始 HTTP 响应
-http.interceptor.response = (result: { code: number, data: unknown }) => {
+http.interceptor.response = (result: { code: number; data: unknown }) => {
   const { code, data } = result
   if (code === 1) {
-    return data  // ← .then(result: T) 收到的是这里
-  }
-  else {
+    return data // ← .then(result: T) 收到的是这里
+  } else {
     return false // ← 进入 .catch()
   }
 }
@@ -64,10 +63,9 @@ function request<T = unknown>({ url, method, data = {} }: RequestOptions): Promi
         // request:fail timeout => 请求超时
         if (errorData.code === 401) {
           toast('请授权登录')
-          const appStore = useAuthStore()
+          const appStore = useAppStore()
           appStore?.logout()
-        }
-        else {
+        } else {
           uni.showModal({
             title: '提示',
             content: errorData.msg,

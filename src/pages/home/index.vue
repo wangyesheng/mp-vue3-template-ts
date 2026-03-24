@@ -1,110 +1,22 @@
-<script setup lang="ts">
-const orderType = ref(0)
-</script>
-
 <template>
   <AppContainer>
     <div class="store">
       <div class="section">
         <div class="section-head">
           <span class="title">结算概览</span>
-          <span class="more">查看全部</span>
+          <span class="more" @click="navTo('/pages/settlement/index')">查看全部</span>
         </div>
-        <div class="settlement-card">
-          <div class="settlement-top">
-            <div class="settlement-info">
-              <div class="settlement-label">
-                本月待结算总额
-              </div>
-              <div class="settlement-amount">
-                <span class="currency">¥</span>
-                <span class="amount">12,850.00</span>
-              </div>
-            </div>
-            <div class="settlement-icon">
-              <text class="icon-wallet">💰</text>
-            </div>
-          </div>
-          <div class="settlement-divider" />
-          <div class="settlement-bottom">
-            <div class="settlement-item">
-              <div class="item-label">
-                工时费
-              </div>
-              <div class="item-value">
-                ¥ 9,200
-              </div>
-            </div>
-            <div class="settlement-item-divider" />
-            <div class="settlement-item">
-              <div class="item-label">
-                奖励金
-              </div>
-              <div class="item-value">
-                ¥ 3,650
-              </div>
-            </div>
-          </div>
-        </div>
+        <Summary />
       </div>
-
-      <!-- 数据看板 -->
-      <!-- <div class="dashboard">
-        <div class="data-card">
-          <div class="icon-wrap success">
-            <text>✓</text>
-          </div>
-          <div class="label">
-            已结算{{ order_num }}
-          </div>
-          <div class="value">
-            ¥ 45,200
-          </div>
-        </div>
-        <div class="data-card">
-          <div class="icon-wrap warning">
-            <text>🕒</text>
-          </div>
-          <div class="label">
-            待结算
-          </div>
-          <div class="value">
-            ¥ 12,850
-          </div>
-        </div>
-        <div class="data-card">
-          <div class="icon-wrap primary">
-            <text>🏆</text>
-          </div>
-          <div class="label">
-            本月奖励
-          </div>
-          <div class="value">
-            ¥ 3,650
-          </div>
-        </div>
-        <div class="data-card">
-          <div class="icon-wrap purple">
-            <text>📈</text>
-          </div>
-          <div class="label">
-            环比增长
-          </div>
-          <div class="value up">
-            +12.5%
-          </div>
-        </div>
-      </div> -->
 
       <!-- 订单管理 -->
       <div class="section">
         <div class="section-head">
           <span class="title">订单管理</span>
-          <span class="more">查看全部</span>
         </div>
 
         <nut-tabs v-model="orderType">
-          <nut-tab-pane title="待施工 (3)">
+          <nut-tab-pane title="待施工">
             <div class="order-list">
               <!-- 待施工订单 -->
               <div class="order-card">
@@ -118,18 +30,12 @@ const orderType = ref(0)
                         <span class="name">奥迪 A6L 2023款</span>
                         <!-- <span class="tag pending">待施工</span> -->
                       </div>
-                      <div class="sn">
-                        订单号：#36123217
-                      </div>
+                      <div class="sn">订单号：#36123217</div>
                     </div>
                   </div>
                   <div class="price-wrap">
-                    <div class="price">
-                      ¥ 450.00
-                    </div>
-                    <div class="desc">
-                      预计工时费
-                    </div>
+                    <div class="price">¥ 450.00</div>
+                    <div class="desc">预计工时费</div>
                   </div>
                 </div>
 
@@ -152,9 +58,7 @@ const orderType = ref(0)
                 </div>
 
                 <div class="actions">
-                  <nut-button block plain size="large">
-                    联系客户
-                  </nut-button>
+                  <nut-button block plain size="large"> 联系客户 </nut-button>
                   <nut-button block custom-color="#1a1a2e" size="large">
                     开始施工 / 录入
                   </nut-button>
@@ -163,7 +67,7 @@ const orderType = ref(0)
             </div>
           </nut-tab-pane>
 
-          <nut-tab-pane title="施工中 (1)">
+          <nut-tab-pane title="施工中">
             <div class="order-list">
               <!-- 待施工订单 -->
               <div class="order-card">
@@ -177,18 +81,12 @@ const orderType = ref(0)
                         <span class="name">奥迪 A6L 2023款</span>
                         <!-- <span class="tag pending">待施工</span> -->
                       </div>
-                      <div class="sn">
-                        订单号：#36123217
-                      </div>
+                      <div class="sn">订单号：#36123217</div>
                     </div>
                   </div>
                   <div class="price-wrap">
-                    <div class="price">
-                      ¥ 450.00
-                    </div>
-                    <div class="desc">
-                      预计工时费
-                    </div>
+                    <div class="price">¥ 450.00</div>
+                    <div class="desc">预计工时费</div>
                   </div>
                 </div>
 
@@ -211,7 +109,12 @@ const orderType = ref(0)
                 </div>
 
                 <div class="actions">
-                  <nut-button block type="primary" size="large">
+                  <nut-button
+                    block
+                    type="primary"
+                    size="large"
+                    @click="navTo('/pages/completion/index')"
+                  >
                     完成施工
                   </nut-button>
                 </div>
@@ -225,36 +128,62 @@ const orderType = ref(0)
               <div class="order-card mini">
                 <div class="card-header">
                   <div class="car-info">
-                    <div class="car-icon success">
-                      <text>✓</text>
+                    <div class="car-icon">
+                      <text>🚗</text>
                     </div>
                     <div class="info">
                       <div class="name-wrap">
-                        <span class="name">宝马 5系 2022款</span>
-                        <span class="tag done">已完成</span>
+                        <span class="name">奥迪 A6L 2023款</span>
+                        <!-- <span class="tag pending">待施工</span> -->
                       </div>
-                      <div class="sn">
-                        订单号：#36123215
-                      </div>
+                      <div class="sn">订单号：#36123217</div>
                     </div>
                   </div>
-                  <div class="price-info">
-                    <div class="symbol">
-                      ¥
-                    </div>
-                    <div class="amount">
-                      680.00
-                    </div>
-                    <div class="status">
-                      已结算
-                    </div>
+                  <div class="price-wrap">
+                    <div class="price">¥ 450.00</div>
+                    <div class="desc">工时费</div>
                   </div>
                 </div>
                 <div class="card-footer">
-                  <span class="time">完工时间：10:30 AM</span>
-                  <span class="more-link">查看详情</span>
+                  <span class="time">完工时间：2026-03-20 10:30</span>
+                  <span class="invoice-tag uninvoiced">未开票</span>
                 </div>
               </div>
+              <div class="order-card mini">
+                <div class="card-header">
+                  <div class="car-info">
+                    <div class="car-icon">
+                      <text>🚗</text>
+                    </div>
+                    <div class="info">
+                      <div class="name-wrap">
+                        <span class="name">奥迪 A6L 2023款</span>
+                        <!-- <span class="tag pending">待施工</span> -->
+                      </div>
+                      <div class="sn">订单号：#36123217</div>
+                    </div>
+                  </div>
+                  <div class="price-wrap">
+                    <div class="price">¥ 450.00</div>
+                    <div class="desc">工时费</div>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <span class="time">完工时间：2026-03-18 16:20</span>
+                  <span class="invoice-tag invoiced">已开票</span>
+                </div>
+              </div>
+            </div>
+            <!-- 去开票入口 -->
+            <div class="invoice-entry" @tap="navTo('/pages/invoice/index')">
+              <div class="invoice-entry-left">
+                <text class="entry-icon">🧾</text>
+                <div class="entry-info">
+                  <div class="entry-title">发票管理</div>
+                  <div class="entry-sub">本月有 2 单未开票，点击前往处理</div>
+                </div>
+              </div>
+              <text class="entry-arrow">›</text>
             </div>
           </nut-tab-pane>
           <nut-tab-pane title="售后处理">
@@ -265,9 +194,7 @@ const orderType = ref(0)
                   <span class="title">订单 #36123009 售后申请</span>
                   <span class="tag warning">待处理</span>
                 </div>
-                <div class="time">
-                  申请时间：2023-12-20 09:15
-                </div>
+                <div class="time">申请时间：2023-12-20 09:15</div>
                 <div class="desc-box">
                   <text class="label">问题描述：</text>
                   <text class="content">
@@ -276,9 +203,7 @@ const orderType = ref(0)
                 </div>
                 <div class="actions">
                   <span class="btn-text">驳回</span>
-                  <nut-button type="warning">
-                    处理售后
-                  </nut-button>
+                  <nut-button type="warning"> 处理售后 </nut-button>
                 </div>
               </div>
             </div>
@@ -289,98 +214,36 @@ const orderType = ref(0)
   </AppContainer>
 </template>
 
+<script setup lang="ts">
+import { getOrdersRes } from '@/api'
+import { useAppStore } from '@/stores/app'
+import { navTo } from '@/utils/uni'
+
+const { appToken } = storeToRefs(useAppStore())
+const orderType = ref(0)
+
+onLoad(async () => {
+  if (appToken.value) {
+    await getOrdersRes({
+      page: 1,
+      limit: 10,
+    })
+  }
+})
+
+onShow(() => {
+  if (!appToken.value) {
+    navTo('/pages/login/index')
+  }
+})
+</script>
+
 <style lang="scss" scoped>
 .store {
   ::v-deep() {
     .nut-tab-pane {
       padding: 0 !important;
       background: transparent !important;
-    }
-  }
-
-  // 结算概览卡片
-  .settlement-card {
-    padding: 36rpx;
-    margin-top: 20rpx;
-    background: linear-gradient(135deg, #4ade80, #16a34a);
-    border-radius: 24rpx;
-
-    .settlement-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-
-      .settlement-info {
-        .settlement-label {
-          margin-bottom: 16rpx;
-          font-size: 26rpx;
-          color: rgb(255 255 255 / 80%);
-        }
-
-        .settlement-amount {
-          display: flex;
-          gap: 8rpx;
-          align-items: baseline;
-
-          .currency {
-            font-size: 32rpx;
-            font-weight: 600;
-            color: #fff;
-          }
-
-          .amount {
-            font-size: 64rpx;
-            font-weight: 700;
-            line-height: 1;
-            color: #fff;
-          }
-        }
-      }
-
-      .settlement-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 88rpx;
-        height: 88rpx;
-        font-size: 44rpx;
-        background: rgb(255 255 255 / 20%);
-        border-radius: 20rpx;
-      }
-    }
-
-    .settlement-divider {
-      height: 1rpx;
-      margin: 32rpx 0;
-      background: rgb(255 255 255 / 25%);
-    }
-
-    .settlement-bottom {
-      display: flex;
-      align-items: center;
-
-      .settlement-item {
-        flex: 1;
-
-        .item-label {
-          margin-bottom: 8rpx;
-          font-size: 24rpx;
-          color: rgb(255 255 255 / 75%);
-        }
-
-        .item-value {
-          font-size: 32rpx;
-          font-weight: 600;
-          color: #fff;
-        }
-      }
-
-      .settlement-item-divider {
-        width: 1rpx;
-        height: 60rpx;
-        margin: 0 32rpx;
-        background: rgb(255 255 255 / 25%);
-      }
     }
   }
 
@@ -470,36 +333,6 @@ const orderType = ref(0)
       .more {
         font-size: 26rpx;
         color: #22c55e;
-      }
-    }
-
-    .tabs {
-      display: flex;
-      gap: 40rpx;
-      margin-bottom: 32rpx;
-      border-bottom: 2rpx solid #f0f0f0;
-
-      .tab {
-        position: relative;
-        padding-bottom: 16rpx;
-        font-size: 28rpx;
-        color: #999;
-
-        &.active {
-          font-weight: 600;
-          color: #1a1a2e;
-
-          &::after {
-            position: absolute;
-            right: 0;
-            bottom: -2rpx;
-            left: 0;
-            height: 4rpx;
-            content: '';
-            background: #22c55e;
-            border-radius: 2rpx;
-          }
-        }
       }
     }
 
@@ -683,8 +516,66 @@ const orderType = ref(0)
               font-size: 24rpx;
               color: #22c55e;
             }
+
+            .invoice-tag {
+              padding: 6rpx 16rpx;
+              font-size: 22rpx;
+              font-weight: 600;
+              border-radius: 20rpx;
+
+              &.uninvoiced {
+                color: #f97316;
+                background: #fff7ed;
+              }
+
+              &.invoiced {
+                color: #22c55e;
+                background: #dcfce7;
+              }
+            }
           }
         }
+      }
+    }
+
+    .invoice-entry {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28rpx 32rpx;
+      margin-top: 16rpx;
+      background: linear-gradient(135deg, #fffbeb, #fef9c3);
+      border: 2rpx solid #fde68a;
+      border-radius: 20rpx;
+
+      .invoice-entry-left {
+        display: flex;
+        gap: 20rpx;
+        align-items: center;
+
+        .entry-icon {
+          font-size: 48rpx;
+        }
+
+        .entry-info {
+          .entry-title {
+            margin-bottom: 6rpx;
+            font-size: 30rpx;
+            font-weight: 700;
+            color: #92400e;
+          }
+
+          .entry-sub {
+            font-size: 24rpx;
+            color: #b45309;
+          }
+        }
+      }
+
+      .entry-arrow {
+        font-size: 44rpx;
+        font-weight: 300;
+        color: #d97706;
       }
     }
 
