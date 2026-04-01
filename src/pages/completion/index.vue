@@ -1,17 +1,6 @@
 <template>
   <app-container>
     <div class="completion-page">
-      <!-- 顶部进度提示 -->
-      <div class="page-header">
-        <div class="header-icon">
-          <text>🔧</text>
-        </div>
-        <div class="header-info">
-          <div class="header-title">施工完成确认</div>
-          <div class="header-sub">请上传施工相关照片以完成结算</div>
-        </div>
-      </div>
-
       <div class="section-card">
         <div class="section-head">
           <div class="section-title-wrap">
@@ -44,7 +33,7 @@
         <div class="section-head">
           <div class="section-title-wrap">
             <div class="section-dot" />
-            <span class="section-title">施工前照片</span>
+            <span class="section-title">上传施工前照片</span>
             <span class="section-required">必填</span>
           </div>
           <span class="section-desc">车辆前1张、车辆侧面2张、车辆后1张</span>
@@ -58,114 +47,112 @@
             class="photo-item"
             @tap="onClickImage(key, index)"
           >
+            <div v-if="getBeforeUrl(key, index)" class="photo-preview">
+              <image class="preview-img" mode="aspectFill" :src="getBeforeUrl(key, index)" />
+            </div>
+            <div v-else class="photo-placeholder">
+              <div class="placeholder-icon">
+                <text class="i-mdi-camera text-[#666]"></text>
+              </div>
+              <div class="placeholder-label">{{ label }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div v-if="actionType == '2'">
+        <!-- 施工后照片 -->
+        <div class="section-card">
+          <div class="section-head">
+            <div class="section-title-wrap">
+              <div class="section-dot" />
+              <span class="section-title">上传施工后照片</span>
+              <span class="section-required">必填</span>
+            </div>
+            <span class="section-desc">车辆前1张、车辆侧面2张、车辆后1张</span>
+          </div>
+
+          <div class="process-photos">
             <div
-              v-if="key == 'side_photos' ? sidePhotos[index] : orderReqData[key]"
-              class="photo-preview"
+              v-for="{ label, key, index } in rawCarPhotos"
+              :key="key + index"
+              class="photo-item"
+              @tap="onClickImage(key, index)"
             >
-              <image class="preview-img" mode="aspectFill" :src="getUrl(key, index)" />
-            </div>
-            <div v-else class="photo-placeholder">
-              <div class="placeholder-icon">
-                <text class="i-mdi-camera text-[#666]"></text>
+              <div v-if="getAfterUrl(key, index)" class="photo-preview">
+                <image class="preview-img" mode="aspectFill" :src="getAfterUrl(key, index)" />
               </div>
-              <div class="placeholder-label">{{ label }}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 施工后照片 -->
-      <!-- <div class="section-card">
-        <div class="section-head">
-          <div class="section-title-wrap">
-            <div class="section-dot" />
-            <span class="section-title">施工后照片</span>
-            <span class="section-required">必填</span>
-          </div>
-          <span class="section-desc">车辆前1张、车辆侧面2张、车辆后1张</span>
-        </div>
-
-        <div class="process-photos">
-          <div
-            v-for="{ label, key, index } in rawCarPhotos"
-            :key="key + index"
-            class="photo-item"
-            @tap="onClickImage(key, index)"
-          >
-            <div v-if="sidePhotos[index]" class="photo-preview">
-              <image class="preview-img" mode="aspectFill" :src="getUrl(key, index)" />
-            </div>
-            <div v-else class="photo-placeholder">
-              <div class="placeholder-icon">
-                <text class="i-mdi-camera text-[#666]"></text>
+              <div v-else class="photo-placeholder">
+                <div class="placeholder-icon">
+                  <text class="i-mdi-camera text-[#666]"></text>
+                </div>
+                <div class="placeholder-label">{{ label }}</div>
               </div>
-              <div class="placeholder-label">{{ label }}</div>
             </div>
           </div>
         </div>
-      </div> -->
 
-      <!-- 车牌号录入 -->
-      <div class="section-card">
-        <div class="section-head">
-          <div class="section-title-wrap">
-            <div class="section-dot" />
-            <span class="section-title">车牌号</span>
-            <span class="section-required">必填</span>
+        <!-- 车牌号录入 -->
+        <div class="section-card">
+          <div class="section-head">
+            <div class="section-title-wrap">
+              <div class="section-dot" />
+              <span class="section-title">填写车牌号</span>
+              <span class="section-required">必填</span>
+            </div>
+            <span class="section-desc">请输入完整车牌号码</span>
           </div>
-          <span class="section-desc">请输入完整车牌号码</span>
-        </div>
 
-        <div class="plate-input-wrap">
-          <div class="plate-prefix">
-            <text>粤</text>
-          </div>
-          <div class="plate-divider" />
-          <input
-            v-model="plateNumber"
-            class="plate-input"
-            type="text"
-            placeholder="A12345"
-            placeholder-class="plate-placeholder"
-            :maxlength="6"
-          />
-          <div v-if="plateNumber" class="plate-clear" @tap="plateNumber = ''">
-            <text class="clear-icon">✕</text>
-          </div>
-        </div>
-
-        <!-- 示例提示 -->
-        <div class="input-tip">
-          <text class="tip-icon">ℹ️</text>
-          <span class="tip-text">示例：粤A12345 · 新能源：粤AD12345</span>
-        </div>
-      </div>
-
-      <!-- 车架号照片 -->
-      <div class="section-card">
-        <div class="section-head">
-          <div class="section-title-wrap">
-            <div class="section-dot" />
-            <span class="section-title">车架号特写照片</span>
-            <span class="section-required">必填</span>
-          </div>
-          <span class="section-desc">拍摄车架号（VIN）铭牌特写，需清晰可见</span>
-        </div>
-
-        <div class="vin-upload-area" @tap="onClickImage('frame_photo', 0)">
-          <div v-if="orderReqData.frame_photo" class="vin-preview">
-            <image class="vin-preview-img" mode="aspectFill" :src="orderReqData.frame_photo" />
-            <div class="vin-overlay">
-              <text class="vin-overlay-icon">✓</text>
-              <span>重新拍摄</span>
+          <div class="plate-input-wrap">
+            <div class="plate-prefix">
+              <text>粤</text>
+            </div>
+            <div class="plate-divider" />
+            <input
+              v-model="plateNumber"
+              class="plate-input"
+              type="text"
+              placeholder="A12345"
+              placeholder-class="plate-placeholder"
+              :maxlength="6"
+            />
+            <div v-if="plateNumber" class="plate-clear" @tap="plateNumber = ''">
+              <text class="clear-icon">✕</text>
             </div>
           </div>
-          <div v-else class="vin-placeholder">
-            <div class="vin-placeholder-icon">
-              <text>📸</text>
+
+          <!-- 示例提示 -->
+          <div class="input-tip">
+            <text class="tip-icon">ℹ️</text>
+            <span class="tip-text">示例：粤A12345 · 新能源：粤AD12345</span>
+          </div>
+        </div>
+
+        <!-- 车架号照片 -->
+        <div class="section-card">
+          <div class="section-head">
+            <div class="section-title-wrap">
+              <div class="section-dot" />
+              <span class="section-title">上传车架号特写照片</span>
+              <span class="section-required">必填</span>
             </div>
-            <div class="vin-placeholder-main">点击拍摄车架号</div>
-            <div class="vin-placeholder-sub">支持相册选取</div>
+            <span class="section-desc">拍摄车架号（VIN）铭牌特写，需清晰可见</span>
+          </div>
+
+          <div class="vin-upload-area" @tap="onClickImage('frame_photo', 0)">
+            <div v-if="orderReqData.frame_photo" class="vin-preview">
+              <image class="vin-preview-img" mode="aspectFill" :src="orderReqData.frame_photo" />
+              <div class="vin-overlay">
+                <text class="vin-overlay-icon">✓</text>
+                <span>重新拍摄</span>
+              </div>
+            </div>
+            <div v-else class="vin-placeholder">
+              <div class="vin-placeholder-icon">
+                <text>📸</text>
+              </div>
+              <div class="vin-placeholder-main">点击拍摄车架号</div>
+              <div class="vin-placeholder-sub">支持相册选取</div>
+            </div>
           </div>
         </div>
       </div>
@@ -200,6 +187,7 @@ interface RawCarPhoto {
   key: CarPhotoKey
   index: number
 }
+type ActionType = '1' | '2'
 
 const baseUrl = import.meta.env.VITE_BASE_API,
   uploadUrl = `${baseUrl}/api/common/upload`,
@@ -230,35 +218,60 @@ const { appToken } = storeToRefs(useAppStore())
 const orderInfo = ref<IOrderItem>({} as IOrderItem),
   orderReqData = ref<OrderReqData>({} as OrderReqData),
   loading = ref(false),
-  sidePhotos = ref<string[]>([])
+  sidePhotos = ref<string[]>([]),
+  actionType = ref<'1' | '2'>('1')
 
-onLoad(async ({ id = 8 }: { id?: string | number } = {}) => {
+onLoad(async ({ id = 8, type = '1' }: { id?: string | number; type?: ActionType } = {}) => {
+  // type = 1 施工前拍照；type = 2 施工后拍照
+  actionType.value = type
+  uni.setNavigationBarTitle({
+    title: type == '1' ? '施工前确认' : '施工后确认',
+  })
   if (!id) return
-  orderInfo.value = await getOrderInfoRes(id)
-  orderReqData.value = {
-    order_id: orderInfo.value.id,
-    front_photos: orderInfo.value.start_front_photos,
-    back_photos: orderInfo.value.start_back_photos,
-    side_photos: orderInfo.value.start_side_photos.join(),
+  const data = await getOrderInfoRes(id)
+  orderInfo.value = data
+
+  if (type == '1') {
+    // 施工前
+    orderReqData.value = {
+      order_id: orderInfo.value.id,
+      front_photos: orderInfo.value.start_front_photos,
+      back_photos: orderInfo.value.start_back_photos,
+      side_photos: orderInfo.value.start_side_photos.join(),
+    }
+    sidePhotos.value = orderInfo.value.start_side_photos
+  } else {
+    // 施工后
+    orderReqData.value = {
+      order_id: orderInfo.value.id,
+      front_photos: orderInfo.value.end_front_photos,
+      back_photos: orderInfo.value.end_back_photos,
+      side_photos: orderInfo.value.end_side_photos.join(),
+    }
+    sidePhotos.value = orderInfo.value.end_side_photos
   }
-  sidePhotos.value = orderInfo.value.start_side_photos
-  console.log(orderReqData.value, sidePhotos.value)
 })
 
 function getFullUrl(url: string) {
   return `${baseUrl}/${url}`
 }
 
-function getUrl(key: CarPhotoKey, index: number) {
-  if (key == 'side_photos') {
-    return test.url(sidePhotos.value[index])
-      ? sidePhotos.value[index]
-      : getFullUrl(sidePhotos.value[index])
+function getBeforeUrl(key: CarPhotoKey, index: number) {
+  if (actionType.value == '1') {
+    const url = key == 'side_photos' ? sidePhotos.value[index] : orderReqData.value[key]
+    return test.url(url!) ? url : getFullUrl(url!)
   } else {
-    return test.url(orderReqData.value[key]!)
-      ? orderReqData.value[key]
-      : getFullUrl(orderReqData.value[key]!)
+    const url =
+      key == 'side_photos'
+        ? orderInfo.value.start_side_photos[index]
+        : (orderInfo.value[`start_${key}`] as string)
+    return test.url(url) ? url : getFullUrl(url)
   }
+}
+
+function getAfterUrl(key: CarPhotoKey, index: number) {
+  const url = key == 'side_photos' ? sidePhotos.value[index] : orderReqData.value[key]
+  return test.url(url!) ? url : getFullUrl(url!)
 }
 
 async function onChooseImage(key: CarPhotoKey, index: number) {
@@ -425,7 +438,7 @@ const onSubmit = debounce(async () => {
 // 通用卡片
 .section-card {
   padding: 36rpx;
-  margin: 0 32rpx 24rpx;
+  margin: 32rpx 24rpx;
   background: #fff;
   border-radius: 28rpx;
   box-shadow: 0 4rpx 20rpx rgb(0 0 0 / 3%);
