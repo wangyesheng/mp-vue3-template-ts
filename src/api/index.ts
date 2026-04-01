@@ -1,45 +1,5 @@
 import request from '@/utils/request'
 
-interface DecryUserPhoneParams {
-  encrypted_data?: string
-  iv?: string
-  code?: string
-}
-
-interface DecryUserPhoneResult {
-  data: string
-  openid: string
-}
-
-interface CheckLoginParams {
-  openid: string
-  nickname: string
-  avatar: string
-  mobile: string
-}
-
-interface CheckLoginResult {
-  userinfo: {
-    token: string
-  }
-}
-
-export async function decryUserPhoneRes(data: DecryUserPhoneParams): Promise<DecryUserPhoneResult> {
-  return request({
-    url: '',
-    method: 'post',
-    data,
-  })
-}
-
-export async function checkLoginRes(data: CheckLoginParams): Promise<CheckLoginResult> {
-  return request({
-    url: '',
-    method: 'post',
-    data,
-  })
-}
-
 export async function loginRes(data: ILoginReqData): Promise<IUserInfo> {
   return request({
     url: '/api/user/account_login',
@@ -48,10 +8,35 @@ export async function loginRes(data: ILoginReqData): Promise<IUserInfo> {
   })
 }
 
-export async function getOrdersRes(data: IPage): Promise<any> {
+export async function getUserInfoRes(): Promise<IUserInfo> {
   return request({
-    url: 'api/order/list',
+    url: '/api/user/info',
     method: 'get',
+  })
+}
+
+export async function getOrdersRes(data: IPageParams): Promise<IPageData<IOrderItem>> {
+  return request({
+    url: '/api/order/list',
+    method: 'get',
+    data,
+  })
+}
+
+export async function getOrderInfoRes(order_id: number | string): Promise<IOrderItem> {
+  return request({
+    url: '/api/order/detail',
+    method: 'get',
+    data: {
+      order_id,
+    },
+  })
+}
+
+export async function startWorkRes(data: OrderReqData): Promise<any> {
+  return request({
+    url: '/api/order/start',
+    method: 'post',
     data,
   })
 }

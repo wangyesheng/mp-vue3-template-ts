@@ -1,5 +1,5 @@
 <template>
-  <AppContainer>
+  <app-container>
     <div class="settlement-page">
       <!-- 顶部月份选择器 -->
       <div class="month-bar">
@@ -76,7 +76,7 @@
         </div>
       </div>
     </div>
-  </AppContainer>
+  </app-container>
 </template>
 
 <script setup lang="ts">
@@ -249,12 +249,6 @@ const allData: Record<string, SettlementItem[]> = {
 const currentKey = computed(() => `${currentYear.value}-${currentMonth.value}`)
 const list = computed(() => allData[currentKey.value] ?? [])
 
-const totalWorkFee = computed(() => list.value.reduce((s, i) => s + i.workFee, 0))
-const totalRewardFee = computed(() => list.value.reduce((s, i) => s + i.rewardFee, 0))
-const totalAmount = computed(() => totalWorkFee.value + totalRewardFee.value)
-const settledCount = computed(() => list.value.filter((i) => i.status === 'settled').length)
-const pendingCount = computed(() => list.value.filter((i) => i.status === 'pending').length)
-
 const monthLabel = computed(() => `${currentYear.value} 年 ${currentMonth.value} 月`)
 
 function prevMonth() {
@@ -292,7 +286,6 @@ function formatAmount(val: number) {
 
 <style lang="scss" scoped>
 .settlement-page {
-  min-height: 100vh;
   background: var(--uvt-primary-bg-color);
   padding: 0 32rpx;
   padding-bottom: 48rpx;

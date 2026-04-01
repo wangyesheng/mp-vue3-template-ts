@@ -1,5 +1,5 @@
 <template>
-  <AppContainer>
+  <app-container>
     <div class="completion-page">
       <!-- 顶部进度提示 -->
       <div class="page-header">
@@ -12,134 +12,98 @@
         </div>
       </div>
 
-      <!-- 订单信息条 -->
-      <div class="order-banner">
-        <div class="order-item">
-          <span class="order-label">订单号</span>
-          <span class="order-value">#36124301</span>
-        </div>
-        <div class="order-divider" />
-        <div class="order-item">
-          <span class="order-label">车辆</span>
-          <span class="order-value">奔驰 E300</span>
-        </div>
-        <div class="order-divider" />
-        <div class="order-item">
-          <span class="order-label">服务</span>
-          <span class="order-value">全车精洗 + 镀晶</span>
-        </div>
-      </div>
-
-      <!-- 施工过程照片 -->
       <div class="section-card">
         <div class="section-head">
           <div class="section-title-wrap">
             <div class="section-dot" />
-            <span class="section-title">施工过程照片</span>
+            <span class="section-title">订单详情</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 gap-3">
+          <div class="flex items-center justify-between">
+            <span class="text-sm text-slate-400">订单号</span>
+            <span class="font-mono text-sm font-medium text-slate-700">{{
+              orderInfo.order_sn
+            }}</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-sm text-slate-400">车辆</span>
+            <span class="text-sm font-medium text-slate-700">{{ orderInfo.vehicle_type }}</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-sm text-slate-400">服务</span>
+            <span class="text-sm font-medium text-emerald-700">
+              {{ orderInfo.product_name }} - {{ orderInfo.service_name }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 施工前照片 -->
+      <div class="section-card">
+        <div class="section-head">
+          <div class="section-title-wrap">
+            <div class="section-dot" />
+            <span class="section-title">施工前照片</span>
             <span class="section-required">必填</span>
           </div>
-          <span class="section-desc">需上传车辆前、中、后各 1 张</span>
+          <span class="section-desc">车辆前1张、车辆侧面2张、车辆后1张</span>
         </div>
 
         <div class="process-photos">
           <!-- 施工前 -->
-          <div class="photo-item" @tap="choosePhoto('before')">
-            <div v-if="photos.before" class="photo-preview">
-              <image class="preview-img" :src="photos.before" mode="aspectFill" />
-              <div class="photo-delete" @tap.stop="removePhoto('before')">
-                <text class="delete-icon">✕</text>
-              </div>
+          <div
+            v-for="{ label, key, index } in rawCarPhotos"
+            :key="key"
+            class="photo-item"
+            @tap="onClickImage(key, index)"
+          >
+            <div
+              v-if="key == 'side_photos' ? sidePhotos[index] : orderReqData[key]"
+              class="photo-preview"
+            >
+              <image class="preview-img" mode="aspectFill" :src="getUrl(key, index)" />
             </div>
             <div v-else class="photo-placeholder">
               <div class="placeholder-icon">
-                <text>📷</text>
+                <text class="i-mdi-camera text-[#666]"></text>
               </div>
-              <div class="placeholder-label">车辆前</div>
-            </div>
-            <div class="photo-stage before">
-              <text>前</text>
-            </div>
-          </div>
-
-          <!-- 施工中 -->
-          <div class="photo-item" @tap="choosePhoto('during')">
-            <div v-if="photos.during" class="photo-preview">
-              <image class="preview-img" :src="photos.during" mode="aspectFill" />
-              <div class="photo-delete" @tap.stop="removePhoto('during')">
-                <text class="delete-icon">✕</text>
-              </div>
-            </div>
-            <div v-else class="photo-placeholder">
-              <div class="placeholder-icon">
-                <text>📷</text>
-              </div>
-              <div class="placeholder-label">车辆中</div>
-            </div>
-            <div class="photo-stage during">
-              <text>中</text>
-            </div>
-          </div>
-
-          <!-- 施工后 -->
-          <div class="photo-item" @tap="choosePhoto('after')">
-            <div v-if="photos.after" class="photo-preview">
-              <image class="preview-img" :src="photos.after" mode="aspectFill" />
-              <div class="photo-delete" @tap.stop="removePhoto('after')">
-                <text class="delete-icon">✕</text>
-              </div>
-            </div>
-            <div v-else class="photo-placeholder">
-              <div class="placeholder-icon">
-                <text>📷</text>
-              </div>
-              <div class="placeholder-label">车辆后</div>
-            </div>
-            <div class="photo-stage after">
-              <text>后</text>
-            </div>
-          </div>
-        </div>
-
-        <!-- 参考示例 -->
-        <div class="example-wrap">
-          <div class="example-header">
-            <text class="example-icon">💡</text>
-            <span class="example-title">拍摄参考示例</span>
-          </div>
-          <div class="example-list">
-            <div class="example-item">
-              <div class="example-img-wrap">
-                <div class="example-mock before-mock">
-                  <div class="mock-car">🚗</div>
-                  <div class="mock-label">车辆整体正面</div>
-                </div>
-              </div>
-              <span class="example-tag before-tag">施工前</span>
-              <span class="example-tip">全车正面，光线充足</span>
-            </div>
-            <div class="example-item">
-              <div class="example-img-wrap">
-                <div class="example-mock during-mock">
-                  <div class="mock-car">🔧</div>
-                  <div class="mock-label">施工操作特写</div>
-                </div>
-              </div>
-              <span class="example-tag during-tag">施工中</span>
-              <span class="example-tip">操作部位特写</span>
-            </div>
-            <div class="example-item">
-              <div class="example-img-wrap">
-                <div class="example-mock after-mock">
-                  <div class="mock-car">✨</div>
-                  <div class="mock-label">完工整体效果</div>
-                </div>
-              </div>
-              <span class="example-tag after-tag">施工后</span>
-              <span class="example-tip">整体效果对比</span>
+              <div class="placeholder-label">{{ label }}</div>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- 施工后照片 -->
+      <!-- <div class="section-card">
+        <div class="section-head">
+          <div class="section-title-wrap">
+            <div class="section-dot" />
+            <span class="section-title">施工后照片</span>
+            <span class="section-required">必填</span>
+          </div>
+          <span class="section-desc">车辆前1张、车辆侧面2张、车辆后1张</span>
+        </div>
+
+        <div class="process-photos">
+          <div
+            v-for="{ label, key, index } in rawCarPhotos"
+            :key="key + index"
+            class="photo-item"
+            @tap="onClickImage(key, index)"
+          >
+            <div v-if="sidePhotos[index]" class="photo-preview">
+              <image class="preview-img" mode="aspectFill" :src="getUrl(key, index)" />
+            </div>
+            <div v-else class="photo-placeholder">
+              <div class="placeholder-icon">
+                <text class="i-mdi-camera text-[#666]"></text>
+              </div>
+              <div class="placeholder-label">{{ label }}</div>
+            </div>
+          </div>
+        </div>
+      </div> -->
 
       <!-- 车牌号录入 -->
       <div class="section-card">
@@ -162,8 +126,8 @@
             class="plate-input"
             type="text"
             placeholder="A12345"
-            :maxlength="6"
             placeholder-class="plate-placeholder"
+            :maxlength="6"
           />
           <div v-if="plateNumber" class="plate-clear" @tap="plateNumber = ''">
             <text class="clear-icon">✕</text>
@@ -188,12 +152,9 @@
           <span class="section-desc">拍摄车架号（VIN）铭牌特写，需清晰可见</span>
         </div>
 
-        <div class="vin-upload-area" @tap="choosePhoto('vin')">
-          <div v-if="photos.vin" class="vin-preview">
-            <image class="vin-preview-img" :src="photos.vin" mode="aspectFill" />
-            <div class="vin-delete" @tap.stop="removePhoto('vin')">
-              <text class="delete-icon">✕</text>
-            </div>
+        <div class="vin-upload-area" @tap="onClickImage('frame_photo', 0)">
+          <div v-if="orderReqData.frame_photo" class="vin-preview">
+            <image class="vin-preview-img" mode="aspectFill" :src="orderReqData.frame_photo" />
             <div class="vin-overlay">
               <text class="vin-overlay-icon">✓</text>
               <span>重新拍摄</span>
@@ -207,127 +168,188 @@
             <div class="vin-placeholder-sub">支持相册选取</div>
           </div>
         </div>
-
-        <!-- VIN 示例 -->
-        <div class="vin-example">
-          <div class="vin-example-header">
-            <text class="example-icon">💡</text>
-            <span class="example-title">车架号位置示例</span>
-          </div>
-          <div class="vin-locations">
-            <div class="vin-location-item">
-              <div class="location-icon-wrap">
-                <text class="location-icon">🪟</text>
-              </div>
-              <div class="location-info">
-                <div class="location-name">前挡风玻璃下方</div>
-                <div class="location-desc">仪表盘左侧可见，最常见位置</div>
-              </div>
-            </div>
-            <div class="vin-location-item">
-              <div class="location-icon-wrap">
-                <text class="location-icon">🚪</text>
-              </div>
-              <div class="location-info">
-                <div class="location-name">驾驶座车门铰链处</div>
-                <div class="location-desc">打开车门，门框内侧铭牌</div>
-              </div>
-            </div>
-          </div>
-          <div class="vin-format-tip">
-            <text class="format-icon">🔍</text>
-            <span class="format-text">VIN 共 17 位，含字母与数字，如：WBAU51090AB012345</span>
-          </div>
-        </div>
       </div>
 
       <!-- 底部提交 -->
       <div class="submit-bar">
-        <div class="submit-progress">
-          <div class="progress-item" :class="{ done: photos.before }">
-            <text>{{ photos.before ? '✓' : '1' }}</text>
-          </div>
-          <div class="progress-line" :class="{ done: photos.before && photos.during }" />
-          <div class="progress-item" :class="{ done: photos.during }">
-            <text>{{ photos.during ? '✓' : '2' }}</text>
-          </div>
-          <div class="progress-line" :class="{ done: photos.during && photos.after }" />
-          <div class="progress-item" :class="{ done: photos.after }">
-            <text>{{ photos.after ? '✓' : '3' }}</text>
-          </div>
-          <div class="progress-line" :class="{ done: photos.after && plateNumber }" />
-          <div class="progress-item" :class="{ done: plateNumber }">
-            <text>{{ plateNumber ? '✓' : '4' }}</text>
-          </div>
-          <div class="progress-line" :class="{ done: plateNumber && photos.vin }" />
-          <div class="progress-item" :class="{ done: photos.vin }">
-            <text>{{ photos.vin ? '✓' : '5' }}</text>
-          </div>
-        </div>
-        <div class="progress-hint">已完成 {{ doneCount }}/5 项</div>
         <nut-button
           block
           size="large"
-          :custom-color="isAllDone ? 'linear-gradient(135deg, #22c55e, #16a34a)' : '#d1d5db'"
-          :disabled="!isAllDone"
-          @tap="handleSubmit"
+          type="primary"
+          :disabled="loading"
+          :loading="loading"
+          @tap="onSubmit"
         >
-          <span class="submit-btn-text">{{
-            isAllDone ? '确认完工并提交' : '请完成所有必填项'
-          }}</span>
+          {{ loading ? '信息提交中...' : '确认提交' }}
         </nut-button>
       </div>
     </div>
-  </AppContainer>
+  </app-container>
 </template>
 
 <script setup lang="ts">
-type PhotoKey = 'before' | 'during' | 'after' | 'vin'
+import { getOrderInfoRes, startWorkRes } from '@/api'
+import { useAppStore } from '@/stores/app'
+import test from '@/utils/test'
+import { toast } from '@/utils/uni'
+import { debounce } from 'lodash-es'
 
-const photos = reactive<Record<PhotoKey, string>>({
-  before: '',
-  during: '',
-  after: '',
-  vin: '',
+type CarPhotoKey = keyof OrderCarPhoto
+interface RawCarPhoto {
+  label: string
+  key: CarPhotoKey
+  index: number
+}
+
+const baseUrl = import.meta.env.VITE_BASE_API,
+  uploadUrl = `${baseUrl}/api/common/upload`,
+  rawCarPhotos: RawCarPhoto[] = [
+    {
+      label: '车辆前',
+      key: 'front_photos',
+      index: 0,
+    },
+    {
+      label: '车辆侧面1',
+      key: 'side_photos',
+      index: 0,
+    },
+    {
+      label: '车辆侧面2',
+      key: 'side_photos',
+      index: 1,
+    },
+    {
+      label: '车辆后',
+      key: 'back_photos',
+      index: 0,
+    },
+  ]
+
+const { appToken } = storeToRefs(useAppStore())
+const orderInfo = ref<IOrderItem>({} as IOrderItem),
+  orderReqData = ref<OrderReqData>({} as OrderReqData),
+  loading = ref(false),
+  sidePhotos = ref<string[]>([])
+
+onLoad(async ({ id = 8 }: { id?: string | number } = {}) => {
+  if (!id) return
+  orderInfo.value = await getOrderInfoRes(id)
+  orderReqData.value = {
+    order_id: orderInfo.value.id,
+    front_photos: orderInfo.value.start_front_photos,
+    back_photos: orderInfo.value.start_back_photos,
+    side_photos: orderInfo.value.start_side_photos.join(),
+  }
+  sidePhotos.value = orderInfo.value.start_side_photos
+  console.log(orderReqData.value, sidePhotos.value)
 })
 
-const plateNumber = ref('')
+function getFullUrl(url: string) {
+  return `${baseUrl}/${url}`
+}
 
-const doneCount = computed(() => {
-  let count = 0
-  if (photos.before) count++
-  if (photos.during) count++
-  if (photos.after) count++
-  if (plateNumber.value) count++
-  if (photos.vin) count++
-  return count
-})
+function getUrl(key: CarPhotoKey, index: number) {
+  if (key == 'side_photos') {
+    return test.url(sidePhotos.value[index])
+      ? sidePhotos.value[index]
+      : getFullUrl(sidePhotos.value[index])
+  } else {
+    return test.url(orderReqData.value[key]!)
+      ? orderReqData.value[key]
+      : getFullUrl(orderReqData.value[key]!)
+  }
+}
 
-const isAllDone = computed(() => doneCount.value === 5)
-
-function choosePhoto(key: PhotoKey) {
+async function onChooseImage(key: CarPhotoKey, index: number) {
   uni.chooseImage({
-    count: 1,
-    sizeType: ['compressed'],
-    sourceType: ['camera', 'album'],
-    success(res) {
-      photos[key] = res.tempFilePaths[0]
+    count: 1, // 最多拍摄数量
+    sourceType: ['camera'], // 只使用相机
+    sizeType: ['compressed'], // 压缩图片
+    async success(res) {
+      uni.uploadFile({
+        url: uploadUrl,
+        filePath: res.tempFilePaths[0],
+        name: 'file',
+        header: {
+          token: appToken.value,
+          'content-type': 'multipart/form-data',
+        },
+        async success(result) {
+          const {
+            code,
+            data: { url },
+            msg,
+          } = JSON.parse(result.data)
+          if (code !== 1) {
+            toast(msg)
+          } else {
+            if (key == 'side_photos') {
+              sidePhotos.value[index] = url
+              orderReqData.value[key] = sidePhotos.value.join()
+            } else {
+              orderReqData.value[key] = url
+            }
+          }
+        },
+        async fail(uploadFileErr) {
+          console.log('upload::error', uploadFileErr)
+          toast('上传失败！')
+        },
+      })
+    },
+    fail(err) {
+      console.log('拍照失败:', err)
     },
   })
 }
 
-function removePhoto(key: PhotoKey) {
-  photos[key] = ''
+function onClickImage(key: CarPhotoKey, index: number) {
+  let value
+  if (key == 'side_photos') {
+    value = sidePhotos.value[index]
+  } else {
+    value = orderReqData.value[key]
+  }
+  if (value) {
+    const fullUrl = test.url(value) ? value : getFullUrl(value)
+    uni.showActionSheet({
+      itemList: ['预览照片', '重新拍照'],
+      success(res) {
+        if (res.tapIndex === 0) {
+          uni.previewImage({
+            current: fullUrl,
+            urls: [fullUrl],
+          })
+        } else {
+          onChooseImage(key, index)
+        }
+      },
+    })
+  } else {
+    onChooseImage(key, index)
+  }
 }
 
-function handleSubmit() {
-  uni.showToast({ title: '提交成功，等待结算', icon: 'success' })
-}
+const plateNumber = ref('')
+
+const onSubmit = debounce(async () => {
+  try {
+    loading.value = true
+    await startWorkRes({
+      ...orderReqData.value,
+      side_photos: sidePhotos.value.join(),
+      order_id: orderInfo.value.id,
+    })
+  } finally {
+    loading.value = false
+  }
+}, 500)
 </script>
 
 <style lang="scss" scoped>
 .completion-page {
-  padding-bottom: 240rpx;
+  padding-bottom: 100rpx;
   background: var(--uvt-primary-bg-color);
 }
 
@@ -367,7 +389,8 @@ function handleSubmit() {
 // 订单信息条
 .order-banner {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  row-gap: 12rpx;
   padding: 24rpx 32rpx;
   margin: 0 32rpx 24rpx;
   background: linear-gradient(135deg, #1a1a2e, #2d2d4e);
@@ -376,9 +399,9 @@ function handleSubmit() {
   .order-item {
     display: flex;
     flex: 1;
-    flex-direction: column;
     gap: 6rpx;
     align-items: center;
+    justify-content: space-between;
 
     .order-label {
       font-size: 22rpx;
@@ -890,61 +913,11 @@ function handleSubmit() {
   right: 0;
   bottom: 0;
   left: 0;
+  z-index: 999;
   padding: 24rpx 32rpx calc(24rpx + env(safe-area-inset-bottom));
   background: #fff;
-  border-top: 1rpx solid #f0f2f5;
+  border-top: 2rpx solid #f0f2f5;
   box-shadow: 0 -8rpx 32rpx rgb(0 0 0 / 6%);
-
-  .submit-progress {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 12rpx;
-
-    .progress-item {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 44rpx;
-      height: 44rpx;
-      font-size: 22rpx;
-      font-weight: 600;
-      color: #9ca3af;
-      background: #f0f2f5;
-      border-radius: 50%;
-      transition: all 0.3s;
-
-      &.done {
-        color: #fff;
-        background: #22c55e;
-      }
-    }
-
-    .progress-line {
-      flex: 1;
-      height: 4rpx;
-      max-width: 60rpx;
-      background: #f0f2f5;
-      transition: all 0.3s;
-
-      &.done {
-        background: #22c55e;
-      }
-    }
-  }
-
-  .progress-hint {
-    margin-bottom: 16rpx;
-    font-size: 24rpx;
-    color: #9ca3af;
-    text-align: center;
-  }
-
-  .submit-btn-text {
-    font-size: 32rpx;
-    font-weight: 600;
-    color: #fff;
-  }
 }
 
 // 占位符样式

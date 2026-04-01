@@ -1,6 +1,26 @@
 <template>
-  <AppContainer>
+  <app-container>
     <div class="store">
+      <div class="user-card">
+        <div class="avatar">
+          <image class="shadow-md" mode="aspectFill" :src="appUser?.avatar" />
+        </div>
+
+        <div class="flex-1">
+          <div class="mb-2 text-lg font-bold tracking-tight text-gray-800">
+            {{ appUser?.nickname }}
+          </div>
+          <div class="flex items-center gap-x-1 text-sm text-gray-400">
+            <span class="i-mdi-phone"></span>
+            <span>{{ appUser?.mobile }}</span>
+          </div>
+        </div>
+
+        <nut-button plain size="mini" type="primary" @click="navTo('/pages/password/index')">
+          修改密码
+        </nut-button>
+      </div>
+
       <div class="section">
         <div class="section-head">
           <span class="title">结算概览</span>
@@ -16,55 +36,62 @@
         </div>
 
         <nut-tabs v-model="orderType">
-          <nut-tab-pane title="待施工">
-            <div class="order-list">
-              <!-- 待施工订单 -->
-              <div class="order-card">
-                <div class="card-header">
-                  <div class="car-info">
-                    <div class="car-icon">
-                      <text>🚗</text>
-                    </div>
-                    <div class="info">
-                      <div class="name-wrap">
-                        <span class="name">奥迪 A6L 2023款</span>
-                        <!-- <span class="tag pending">待施工</span> -->
+          <nut-tab-pane title="待施工" :pane-key="0">
+            <PageList :api="getOrdersRes">
+              <template #item="{ data }">
+                <div class="order-card">
+                  <div class="card-header">
+                    <div class="car-info">
+                      <div class="car-icon">
+                        <text>🚗</text>
                       </div>
-                      <div class="sn">订单号：#36123217</div>
+                      <div class="info">
+                        <div class="name-wrap">
+                          <span class="name">{{ data.vehicle_type }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="price-wrap">
+                      <div class="price">¥ {{ data.hour_price }}</div>
+                      <div class="desc">工时费</div>
                     </div>
                   </div>
-                  <div class="price-wrap">
-                    <div class="price">¥ 450.00</div>
-                    <div class="desc">预计工时费</div>
-                  </div>
-                </div>
 
-                <div class="detail-list">
-                  <div class="detail-item">
-                    <span class="icon">👤</span>
-                    <span class="label">客户</span>
-                    <span class="value">李先生 (138****8888)</span>
-                  </div>
-                  <div class="detail-item">
-                    <span class="icon">📅</span>
-                    <span class="label">预约时间</span>
-                    <span class="value">2023-12-21 14:00</span>
-                  </div>
-                  <div class="detail-item">
-                    <span class="icon">🔧</span>
-                    <span class="label">服务项目</span>
-                    <span class="value">全车精洗 + 打蜡</span>
-                  </div>
-                </div>
+                  <div class="detail-list">
+                    <div class="detail-item">
+                      <span class="icon i-mdi-invoice-text-multiple"></span>
+                      <span class="label">订单号</span>
+                      <span class="value">{{ data.order_sn }}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="icon i-mdi-account"></span>
+                      <span class="label">客户</span>
+                      <span class="value">{{ data.user?.nickname }} ({{ data.user?.mobile }})</span>
+                    </div>
 
-                <div class="actions">
-                  <nut-button block plain size="large"> 联系客户 </nut-button>
-                  <nut-button block custom-color="#1a1a2e" size="large">
-                    开始施工 / 录入
-                  </nut-button>
+                    <div class="detail-item">
+                      <span class="icon i-mdi-car-wrench"></span>
+                      <span class="label">服务项目</span>
+                      <span class="value">{{ data.product_name }} - {{ data.service_name }}</span>
+                    </div>
+                  </div>
+
+                  <div class="actions">
+                    <nut-button block plain size="large" @click="callPhone(data.user?.mobile)">
+                      联系客户
+                    </nut-button>
+                    <nut-button
+                      block
+                      custom-color="#1a1a2e"
+                      size="large"
+                      @click="navTo(`/pages/completion/index?id=${data.id}`)"
+                    >
+                      开始施工 / 录入
+                    </nut-button>
+                  </div>
                 </div>
-              </div>
-            </div>
+              </template>
+            </PageList>
           </nut-tab-pane>
 
           <nut-tab-pane title="施工中">
@@ -79,7 +106,6 @@
                     <div class="info">
                       <div class="name-wrap">
                         <span class="name">奥迪 A6L 2023款</span>
-                        <!-- <span class="tag pending">待施工</span> -->
                       </div>
                       <div class="sn">订单号：#36123217</div>
                     </div>
@@ -179,8 +205,8 @@
               <div class="invoice-entry-left">
                 <text class="entry-icon">🧾</text>
                 <div class="entry-info">
-                  <div class="entry-title">发票管理</div>
-                  <div class="entry-sub">本月有 2 单未开票，点击前往处理</div>
+                  <div class="entry-title">待结算资金</div>
+                  <div class="entry-sub">本月有 2 单待结算，点击前往处理</div>
                 </div>
               </div>
               <text class="entry-arrow">›</text>
@@ -211,25 +237,16 @@
         </nut-tabs>
       </div>
     </div>
-  </AppContainer>
+  </app-container>
 </template>
 
 <script setup lang="ts">
 import { getOrdersRes } from '@/api'
 import { useAppStore } from '@/stores/app'
-import { navTo } from '@/utils/uni'
+import { callPhone, navTo } from '@/utils/uni'
 
-const { appToken } = storeToRefs(useAppStore())
+const { appToken, appUser } = storeToRefs(useAppStore())
 const orderType = ref(0)
-
-onLoad(async () => {
-  if (appToken.value) {
-    await getOrdersRes({
-      page: 1,
-      limit: 10,
-    })
-  }
-})
 
 onShow(() => {
   if (!appToken.value) {
@@ -240,6 +257,38 @@ onShow(() => {
 
 <style lang="scss" scoped>
 .store {
+  .user-card {
+    display: flex;
+    gap: 24rpx;
+    align-items: center;
+    padding: 32rpx;
+    margin: 32rpx;
+    background: #fff;
+    border-radius: 24rpx;
+    box-shadow: 0 12rpx 40rpx rgb(34 197 94 / 10%);
+
+    .avatar {
+      position: relative;
+      image {
+        width: 120rpx;
+        height: 120rpx;
+        border-radius: 20rpx;
+      }
+
+      &::after {
+        content: '';
+        width: 30rpx;
+        height: 30rpx;
+        border-radius: 50%;
+        background: var(--uvt-primary-color);
+        position: absolute;
+        bottom: 0;
+        right: -10rpx;
+        border: 2rpx solid #fff;
+      }
+    }
+  }
+
   ::v-deep() {
     .nut-tab-pane {
       padding: 0 !important;
@@ -336,202 +385,197 @@ onShow(() => {
       }
     }
 
-    .order-list {
-      display: flex;
-      flex-direction: column;
-      gap: 24rpx;
+    .order-card {
+      padding: 32rpx;
+      background: #fff;
+      border-radius: 32rpx;
+      box-shadow: 0 4rpx 24rpx rgb(0 0 0 / 3%);
 
-      .order-card {
-        padding: 32rpx;
-        background: #fff;
-        border-radius: 32rpx;
-        box-shadow: 0 4rpx 24rpx rgb(0 0 0 / 3%);
+      .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 30rpx;
 
-        .card-header {
+        .car-info {
+          display: flex;
+          gap: 20rpx;
+          align-items: center;
+          width: 70%;
+
+          .car-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 80rpx;
+            height: 80rpx;
+            background: #f5f6fa;
+            border-radius: 20rpx;
+
+            text {
+              font-size: 40rpx;
+            }
+
+            &.success {
+              color: #22c55e;
+              background: #dcfce7;
+            }
+          }
+
+          .info {
+            flex: 1;
+
+            .name-wrap {
+              display: flex;
+              gap: 12rpx;
+              align-items: center;
+              margin-bottom: 8rpx;
+
+              .name {
+                font-size: 32rpx;
+                font-weight: bold;
+                color: #1a1a2e;
+              }
+
+              .tag {
+                padding: 4rpx 12rpx;
+                font-size: 20rpx;
+                border-radius: 8rpx;
+
+                &.pending {
+                  color: #94a3b8;
+                  background: #f1f5f9;
+                }
+
+                &.done {
+                  color: #22c55e;
+                  background: #dcfce7;
+                }
+              }
+            }
+
+            .sn {
+              font-size: 24rpx;
+              color: #888;
+            }
+          }
+        }
+
+        .price-info {
+          text-align: right;
+
+          .symbol {
+            display: inline-block;
+            font-size: 24rpx;
+            font-weight: bold;
+            color: #1a1a2e;
+          }
+
+          .amount {
+            display: inline-block;
+            font-size: 36rpx;
+            font-weight: bold;
+            color: #1a1a2e;
+          }
+
+          .status {
+            margin-top: 4rpx;
+            font-size: 22rpx;
+            color: #999;
+          }
+        }
+
+        .price-wrap {
+          flex: 1;
+          text-align: right;
+
+          .price {
+            font-size: 36rpx;
+            font-weight: bold;
+            color: #22c55e;
+          }
+
+          .desc {
+            margin-top: 4rpx;
+            font-size: 24rpx;
+            color: #999;
+          }
+        }
+      }
+
+      .detail-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16rpx;
+        padding: 24rpx;
+        margin-bottom: 32rpx;
+        background: #f8fafc;
+        border-radius: 20rpx;
+
+        .detail-item {
+          display: flex;
+          align-items: center;
+          font-size: 26rpx;
+
+          .icon {
+            margin-right: 12rpx;
+            font-size: 32rpx;
+            color: var(--uvt-primary-color);
+          }
+
+          .label {
+            width: 140rpx;
+            color: #666;
+          }
+
+          .value {
+            flex: 1;
+            font-weight: 500;
+            color: #1a1a2e;
+            text-align: right;
+          }
+        }
+      }
+
+      .actions {
+        display: flex;
+        flex-direction: column;
+        gap: 16rpx;
+      }
+
+      &.mini {
+        .card-footer {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          margin-bottom: 30rpx;
+          padding-top: 24rpx;
+          margin-top: 32rpx;
+          border-top: 2rpx dashed #f0f0f0;
 
-          .car-info {
-            display: flex;
-            gap: 20rpx;
-            align-items: center;
-            width: 70%;
-
-            .car-icon {
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              width: 80rpx;
-              height: 80rpx;
-              background: #f5f6fa;
-              border-radius: 20rpx;
-
-              text {
-                font-size: 40rpx;
-              }
-
-              &.success {
-                color: #22c55e;
-                background: #dcfce7;
-              }
-            }
-
-            .info {
-              flex: 1;
-
-              .name-wrap {
-                display: flex;
-                gap: 12rpx;
-                align-items: center;
-                margin-bottom: 8rpx;
-
-                .name {
-                  font-size: 32rpx;
-                  font-weight: bold;
-                  color: #1a1a2e;
-                }
-
-                .tag {
-                  padding: 4rpx 12rpx;
-                  font-size: 20rpx;
-                  border-radius: 8rpx;
-
-                  &.pending {
-                    color: #94a3b8;
-                    background: #f1f5f9;
-                  }
-
-                  &.done {
-                    color: #22c55e;
-                    background: #dcfce7;
-                  }
-                }
-              }
-
-              .sn {
-                font-size: 24rpx;
-                color: #888;
-              }
-            }
+          .time {
+            font-size: 24rpx;
+            color: #999;
           }
 
-          .price-info {
-            text-align: right;
-
-            .symbol {
-              display: inline-block;
-              font-size: 24rpx;
-              font-weight: bold;
-              color: #1a1a2e;
-            }
-
-            .amount {
-              display: inline-block;
-              font-size: 36rpx;
-              font-weight: bold;
-              color: #1a1a2e;
-            }
-
-            .status {
-              margin-top: 4rpx;
-              font-size: 22rpx;
-              color: #999;
-            }
+          .more-link {
+            font-size: 24rpx;
+            color: #22c55e;
           }
 
-          .price-wrap {
-            flex: 1;
-            text-align: right;
+          .invoice-tag {
+            padding: 6rpx 16rpx;
+            font-size: 22rpx;
+            font-weight: 600;
+            border-radius: 20rpx;
 
-            .price {
-              font-size: 36rpx;
-              font-weight: bold;
+            &.uninvoiced {
+              color: #f97316;
+              background: #fff7ed;
+            }
+
+            &.invoiced {
               color: #22c55e;
-            }
-
-            .desc {
-              margin-top: 4rpx;
-              font-size: 24rpx;
-              color: #999;
-            }
-          }
-        }
-
-        .detail-list {
-          display: flex;
-          flex-direction: column;
-          gap: 16rpx;
-          padding: 24rpx;
-          margin-bottom: 32rpx;
-          background: #f8fafc;
-          border-radius: 20rpx;
-
-          .detail-item {
-            display: flex;
-            align-items: center;
-            font-size: 26rpx;
-
-            .icon {
-              margin-right: 12rpx;
-              color: #666;
-            }
-
-            .label {
-              width: 140rpx;
-              color: #666;
-            }
-
-            .value {
-              flex: 1;
-              font-weight: 500;
-              color: #1a1a2e;
-              text-align: right;
-            }
-          }
-        }
-
-        .actions {
-          display: flex;
-          flex-direction: column;
-          gap: 16rpx;
-        }
-
-        &.mini {
-          .card-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-top: 24rpx;
-            margin-top: 32rpx;
-            border-top: 2rpx dashed #f0f0f0;
-
-            .time {
-              font-size: 24rpx;
-              color: #999;
-            }
-
-            .more-link {
-              font-size: 24rpx;
-              color: #22c55e;
-            }
-
-            .invoice-tag {
-              padding: 6rpx 16rpx;
-              font-size: 22rpx;
-              font-weight: 600;
-              border-radius: 20rpx;
-
-              &.uninvoiced {
-                color: #f97316;
-                background: #fff7ed;
-              }
-
-              &.invoiced {
-                color: #22c55e;
-                background: #dcfce7;
-              }
+              background: #dcfce7;
             }
           }
         }

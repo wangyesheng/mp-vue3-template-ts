@@ -1,5 +1,5 @@
 <template>
-  <AppContainer>
+  <app-container>
     <view class="login-page">
       <!-- 主体内容 -->
       <view class="content">
@@ -72,7 +72,7 @@
         </text>
       </view>
     </view>
-  </AppContainer>
+  </app-container>
 </template>
 
 <script setup lang="ts">
@@ -85,6 +85,7 @@ const appStore = useAppStore()
 const loginParams = ref<ILoginReqData>({
   account: '15895347201',
   password: '123456',
+  platform_type: '2',
 })
 const showPassword = ref(false)
 const loading = ref(false)
@@ -94,7 +95,7 @@ const login = debounce(async () => {
     loading.value = true
     const data = await loginRes(loginParams.value)
     appStore.setAppToken(data.token)
-    appStore.setAppUser(data)
+    await appStore.refreshAppUser()
     uni.reLaunch({ url: '/pages/home/index' })
   } finally {
     loading.value = false
@@ -104,7 +105,8 @@ const login = debounce(async () => {
 
 <style lang="scss" scoped>
 .login-page {
-  height: 100%;
+  // 依赖父元素（AppContainer）的确定高度，确保布局能正确感知父元素 padding-bottom
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;

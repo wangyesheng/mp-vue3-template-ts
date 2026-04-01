@@ -205,6 +205,6 @@ function copy(data: string) {
 
 <style scoped lang="scss">
 .test {
-  @apply flex text-center h-[100px] w-[222.222px] items-center justify-center rounded-[40px] bg-[#123456] bg-opacity-[0.54] text-[#ffffff] #{!important};
+  @apply flex h-[100px] w-[222.222px] items-center justify-center rounded-[40px] bg-[#123456] bg-opacity-[0.54] text-center text-[#ffffff] #{!important};
 }
 </style>

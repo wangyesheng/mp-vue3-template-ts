@@ -36,7 +36,10 @@ export default icebreaker(
       'no-console': 'off',
       'one-var': 'off',
       eqeqeq: 'off', // 允许使用 == 和 != 比较运算符
+      'no-use-before-define': 'off',
+      '@typescript-eslint/no-use-before-define': 'off',
       'antfu/if-newline': 'off', // 关闭与 Prettier 冲突的换行规则，由 curly 统一处理
+      'vue/eqeqeq': 'off', // 允许在 vue 模板中使用 == 和 != 比较运算符
       'vue/block-order': [
         'error',
         {
@@ -45,8 +48,6 @@ export default icebreaker(
       ],
       // camelCase 属性名强制转为 kebab-case，如 customColor → custom-color
       'vue/attribute-hyphenation': ['error', 'always'],
-      // 组件名称在模板中强制使用 kebab-case，如 MyComponent → my-component
-      'vue/component-name-in-template-casing': ['error', 'kebab-case'],
       // 属性排序：静态属性在前，动态属性在后
       'vue/attributes-order': [
         'error',

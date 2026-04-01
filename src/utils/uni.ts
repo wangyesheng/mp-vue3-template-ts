@@ -1,3 +1,5 @@
+import { APP_TOKEN_KEY } from './const'
+
 export function toast(message: string) {
   uni.showToast({
     icon: 'none',
@@ -16,12 +18,12 @@ export function copy(content: string, tips = '复制成功') {
 }
 
 export function navTo(url: string, needToken = true) {
-  // if (needToken) {
-  //   const appUser = uni.getStorageSync('APP_USER') || {}
-  //   if (!appUser.id) {
-  //     return toast('请授权登录')
-  //   }
-  // }
+  if (needToken) {
+    const token = uni.getStorageSync(APP_TOKEN_KEY) || {}
+    if (!token) {
+      return toast('请授权登录')
+    }
+  }
 
   uni.navigateTo({
     url,
@@ -30,8 +32,8 @@ export function navTo(url: string, needToken = true) {
 
 export function switchTab(url: string, needToken = true) {
   if (needToken) {
-    const appUser = uni.getStorageSync('APP_USER') || {}
-    if (!appUser.id) {
+    const token = uni.getStorageSync(APP_TOKEN_KEY) || {}
+    if (!token) {
       return toast('请授权登录')
     }
   }

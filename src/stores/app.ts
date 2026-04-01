@@ -1,18 +1,18 @@
-export const USER_KEY = 'app_user'
-export const TOKEN_KEY = 'app_token'
+import { getUserInfoRes } from '@/api'
+import { APP_TOKEN_KEY, APP_USER_KEY } from '@/utils/const'
 
 export const useAppStore = defineStore('auth', () => {
-  const userInfo = ref<IUserInfo | null>(uni.getStorageSync(USER_KEY) || null)
-  const appToken = ref<string | null>(uni.getStorageSync(TOKEN_KEY) || null)
+  const appUser = ref<IUserInfo | null>(uni.getStorageSync(APP_USER_KEY) || null)
+  const appToken = ref<string | null>(uni.getStorageSync(APP_TOKEN_KEY) || null)
 
   function setAppToken(token: string | null = null) {
     appToken.value = token
-    uni.setStorageSync(TOKEN_KEY, token)
+    uni.setStorageSync(APP_TOKEN_KEY, token)
   }
 
   function setAppUser(user: IUserInfo | null = null) {
-    userInfo.value = user
-    uni.setStorageSync(USER_KEY, user)
+    appUser.value = user
+    uni.setStorageSync(APP_USER_KEY, user)
   }
 
   function logout() {
@@ -21,7 +21,10 @@ export const useAppStore = defineStore('auth', () => {
     uni.reLaunch({ url: '/pages/login/index' })
   }
 
-  async function refreshAppUser() {}
+  async function refreshAppUser() {
+    const user = await getUserInfoRes()
+    setAppUser(user)
+  }
 
-  return { userInfo, appToken, logout, setAppToken, setAppUser, refreshAppUser }
+  return { appUser, appToken, logout, setAppToken, setAppUser, refreshAppUser }
 })

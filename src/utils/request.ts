@@ -1,6 +1,7 @@
 import { useAppStore } from '@/stores/app'
 import http from './http'
 import { toast } from './uni'
+import { APP_TOKEN_KEY } from './const'
 
 type HttpMethodKey = 'get' | 'post' | 'put' | 'delete'
 
@@ -23,7 +24,7 @@ http.setConfig({
 })
 
 http.interceptor.request = (config) => {
-  const token = uni.getStorageSync('app_token')
+  const token = uni.getStorageSync(APP_TOKEN_KEY)
   if (token) {
     config.header = config.header ?? {}
     config.header.token = token

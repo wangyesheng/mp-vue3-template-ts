@@ -1,7 +1,7 @@
 <template>
-  <AppContainer>
+  <app-container>
     <div class="invoice-page">
-      <MonthSwitcher v-model="currentMonth" />
+      <month-switcher v-model="currentMonth" />
       <!-- 统计卡片 -->
       <div class="stats-row">
         <div class="stat-card uninvoiced">
@@ -287,7 +287,7 @@
         </div>
       </div>
     </nut-popup>
-  </AppContainer>
+  </app-container>
 </template>
 
 <script setup lang="ts">

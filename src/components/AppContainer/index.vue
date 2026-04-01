@@ -27,8 +27,9 @@ const themeVars = reactive({
   position: relative;
   width: 100%;
   min-height: 100vh;
-  height: 100vh;
   overflow-x: hidden;
   padding-bottom: calc(50rpx + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
 }
 </style>

@@ -14,14 +14,14 @@
         </div>
       </div>
       <div class="summary-icon">
-        <text>📋</text>
+        <text class="i-mdi-invoice-text-multiple-outline text-white"></text>
       </div>
     </div>
     <div class="summary-divider" />
     <div class="summary-bottom">
       <div class="summary-item">
         <div class="item-icon work">
-          <text>⚙️</text>
+          <text class="i-mdi-cog-outline text-white"></text>
         </div>
         <div class="item-info">
           <div class="item-label">工时费</div>
@@ -30,8 +30,8 @@
       </div>
       <div class="summary-sep" />
       <div class="summary-item">
-        <div class="item-icon reward">
-          <text>🏆</text>
+        <div class="item-icon">
+          <text class="i-mdi-trophy-outline text-white"></text>
         </div>
         <div class="item-info">
           <div class="item-label">奖励金</div>
@@ -171,18 +171,11 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 72rpx;
-        height: 72rpx;
+        width: 82rpx;
+        height: 82rpx;
         font-size: 36rpx;
         border-radius: 18rpx;
-
-        &.work {
-          background: rgb(255 255 255 / 15%);
-        }
-
-        &.reward {
-          background: rgb(253 224 71 / 20%);
-        }
+        background: rgb(255 255 255 / 15%);
       }
 
       .item-info {
@@ -193,13 +186,9 @@
         }
 
         .item-value {
-          font-size: 32rpx;
+          font-size: 36rpx;
           font-weight: 700;
           color: #fff;
-
-          &.reward-val {
-            color: #fde047;
-          }
         }
       }
     }

@@ -7,15 +7,15 @@
       }
     },
     {
-      "path": "pages/invoice/index",
-      "style": {
-        "navigationBarTitleText": "发票管理"
-      }
-    },
-    {
       "path": "pages/completion/index",
       "style": {
         "navigationBarTitleText": "施工完成确认"
+      }
+    },
+    {
+      "path": "pages/invoice/index",
+      "style": {
+        "navigationBarTitleText": "待结算资金管理"
       }
     },
     {
@@ -29,6 +29,12 @@
       "style": {
         "navigationBarTitleText": "登录",
         "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/password/index",
+      "style": {
+        "navigationBarTitleText": "修改密码"
       }
     }
   ],
