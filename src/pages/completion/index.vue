@@ -179,7 +179,7 @@ import { getOrderInfoRes, startWorkRes } from '@/api'
 import { useAppStore } from '@/stores/app'
 import test from '@/utils/test'
 import { toast } from '@/utils/uni'
-import { debounce } from 'lodash-es'
+import { debounce } from 'es-toolkit'
 
 type CarPhotoKey = keyof OrderCarPhoto
 interface RawCarPhoto {

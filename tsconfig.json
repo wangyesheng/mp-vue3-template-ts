@@ -2,24 +2,15 @@
   "compilerOptions": {
     "target": "esnext",
     "jsx": "preserve",
-    "lib": [
-      "esnext",
-      "dom"
-    ],
+    "lib": ["esnext", "dom"],
     "useDefineForClassFields": true,
-    "baseUrl": ".",
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "paths": {
-      "@/*": [
-        "src/*"
-      ]
+      "@/*": ["./src/*"]
     },
     "resolveJsonModule": true,
-    "types": [
-      "@dcloudio/types",
-      "nutui-uniapp/global.d.ts"
-    ],
+    "types": ["@dcloudio/types", "nutui-uniapp/global.d.ts"],
     "allowJs": true,
     "strict": true,
     "sourceMap": true,

@@ -21,6 +21,8 @@ export default icebreaker(
       'unpackage/**',
       '*.config.ts',
       '*.config.js',
+      // eslint-plugin-vue 会把 <style> 抽成虚拟路径（如 foo.vue/1_style.scss），默认按 JS 解析会报 Unexpected token .
+      '**/*.vue/**',
     ],
     // 开启 ESLint 缓存，大幅提升重复检查速度
     cache: true,
@@ -37,6 +39,7 @@ export default icebreaker(
       'one-var': 'off',
       eqeqeq: 'off', // 允许使用 == 和 != 比较运算符
       'no-use-before-define': 'off',
+      'e18e/prefer-static-regex': 'off', // 关闭正则表达式字面量必须使用静态字符串的规则，允许使用动态字符串
       '@typescript-eslint/no-use-before-define': 'off',
       'antfu/if-newline': 'off', // 关闭与 Prettier 冲突的换行规则，由 curly 统一处理
       'vue/eqeqeq': 'off', // 允许在 vue 模板中使用 == 和 != 比较运算符

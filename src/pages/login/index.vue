@@ -76,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { debounce } from 'lodash-es'
+import { debounce } from 'es-toolkit'
 import { loginRes } from '@/api'
 import { useAppStore } from '@/stores/app'
 

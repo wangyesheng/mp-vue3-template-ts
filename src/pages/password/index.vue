@@ -95,8 +95,9 @@
 </template>
 
 <script setup lang="ts">
-import { debounce } from 'lodash-es'
+import { debounce } from 'es-toolkit'
 import { useAppStore } from '@/stores/app'
+import test from '@/utils/test'
 
 const appStore = useAppStore()
 
@@ -117,7 +118,7 @@ function validateForm() {
     uni.showToast({ title: '请输入手机号', icon: 'none' })
     return false
   }
-  if (!/^1[3-9]\d{9}$/.test(form.value.mobile)) {
+  if (test.mobile(form.value.mobile)) {
     uni.showToast({ title: '手机号格式不正确', icon: 'none' })
     return false
   }
