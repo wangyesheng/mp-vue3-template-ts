@@ -55,3 +55,17 @@ page {
     }
   }
 }
+
+.nut-empty {
+  height: 100%;
+  margin: auto;
+
+  .nut-empty__box {
+    width: 195rpx;
+    height: 128rpx;
+  }
+
+  .nut-empty__description {
+    margin-top: 30rpx;
+  }
+}

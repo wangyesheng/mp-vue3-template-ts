@@ -37,12 +37,17 @@
 
         <nut-tabs v-model="currentOrderType">
           <nut-tab-pane
-            v-for="{ key, label } in orderTypes"
-            :key="key"
-            :title="label"
-            :pane-key="key"
+            v-for="item in orderTypes"
+            :key="item.key"
+            :title="item.label"
+            :pane-key="item.key"
           >
-            <PageList :api="getOrdersRes" :active="currentOrderType == key">
+            <PageList
+              :ref="(el) => setPageListRef(item, el)"
+              :api="getOrdersRes"
+              :active="currentOrderType == item.key"
+              :params="{ status: item.key }"
+            >
               <template #item="{ data }">
                 <div class="order-card">
                   <div class="card-header">
@@ -84,7 +89,7 @@
                     </div>
                   </div>
 
-                  <div v-if="key == 0" class="actions">
+                  <div v-if="item.key == 1" class="actions">
                     <nut-button block plain size="large" @click="callPhone(data.user?.mobile)">
                       联系客户
                     </nut-button>
@@ -92,17 +97,17 @@
                       block
                       custom-color="#1a1a2e"
                       size="large"
-                      @click="navTo(`/pages/completion/index?id=${data.id}&type=1`)"
+                      @click="navTo(`/pages/completion/index?id=${data.id}&type=before`)"
                     >
                       开始施工 / 录入
                     </nut-button>
                   </div>
-                  <div v-if="key == 1" class="actions">
+                  <div v-if="item.key == 2" class="actions">
                     <nut-button
                       block
                       type="primary"
                       size="large"
-                      @click="navTo(`/pages/completion/index?id=${data.id}&type=2`)"
+                      @click="navTo(`/pages/completion/index?id=${data.id}&type=after`)"
                     >
                       完成施工
                     </nut-button>
@@ -119,25 +124,44 @@
 
 <script setup lang="ts">
 import { getOrdersRes } from '@/api'
+import { setPageListRef } from '@/components/PageList/instance'
+import type { PageListInstanceHolder } from '@/components/PageList/instance'
 import { useAppStore } from '@/stores/app'
 import { callPhone, navTo } from '@/utils/uni'
 
-type OrderType = 0 | 1 | 2 | 3
+type OrderTypeKey = 1 | 2 | 3 | 4 | 5
 
-const orderTypes = [
-  { key: 0, label: '待施工' },
-  { key: 1, label: '施工中' },
-  { key: 2, label: '已完成' },
-  { key: 3, label: '售后处理' },
-]
-const { appToken, appUser } = storeToRefs(useAppStore())
-const currentOrderType = ref<OrderType>(0)
+interface OrderType extends PageListInstanceHolder {
+  key: OrderTypeKey
+  label: string
+}
+
+const orderTypes = ref<OrderType[]>([
+  { key: 1, label: '待施工', instance: null },
+  { key: 2, label: '施工中', instance: null },
+  { key: 3, label: '待确认', instance: null },
+  { key: 4, label: '已完成', instance: null },
+  { key: 5, label: '售后处理', instance: null },
+])
+const appStore = useAppStore()
+const { appToken, appUser } = storeToRefs(appStore)
+const currentOrderType = ref<OrderTypeKey>(1)
 
 onShow(() => {
   if (!appToken.value) {
     navTo('/pages/login/index')
+    return
+  }
+  // 仅从「施工/完工录入」等页面返回时需要拉最新列表；其它 onShow（切后台回来）不强制刷新
+  if (appStore.checkHomeOrderListNeedRefresh()) {
+    refresh()
   }
 })
+
+function refresh() {
+  const current = orderTypes.value.find((x) => x.key == currentOrderType.value)
+  current?.instance?.refresh()
+}
 </script>
 
 <style lang="scss" scoped>

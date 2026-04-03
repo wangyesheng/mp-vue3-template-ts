@@ -42,24 +42,24 @@
         <div class="process-photos">
           <!-- 施工前 -->
           <div
-            v-for="{ label, key, index } in rawCarPhotos"
-            :key="key"
+            v-for="photo in beforeCarPhotos"
+            :key="`${photo.type}-${photo.key}-${photo.index}`"
             class="photo-item"
-            @tap="onClickImage(key, index)"
+            @tap="onClickImage(photo.key, photo.index, photo.type as ActionType)"
           >
-            <div v-if="getBeforeUrl(key, index)" class="photo-preview">
-              <image class="preview-img" mode="aspectFill" :src="getBeforeUrl(key, index)" />
+            <div v-if="photo.url" class="photo-preview">
+              <image class="preview-img" mode="aspectFill" :src="photo.url" />
             </div>
             <div v-else class="photo-placeholder">
               <div class="placeholder-icon">
                 <text class="i-mdi-camera text-[#666]"></text>
               </div>
-              <div class="placeholder-label">{{ label }}</div>
+              <div class="placeholder-label">{{ photo.label }}</div>
             </div>
           </div>
         </div>
       </div>
-      <div v-if="actionType == '2'">
+      <div v-if="actionType == 'after'">
         <!-- 施工后照片 -->
         <div class="section-card">
           <div class="section-head">
@@ -73,19 +73,19 @@
 
           <div class="process-photos">
             <div
-              v-for="{ label, key, index } in rawCarPhotos"
-              :key="key + index"
+              v-for="photo in afterCarPhotos"
+              :key="`${photo.type}-${photo.key}-${photo.index}`"
               class="photo-item"
-              @tap="onClickImage(key, index)"
+              @tap="onClickImage(photo.key, photo.index, photo.type as ActionType)"
             >
-              <div v-if="getAfterUrl(key, index)" class="photo-preview">
-                <image class="preview-img" mode="aspectFill" :src="getAfterUrl(key, index)" />
+              <div v-if="photo.url" class="photo-preview">
+                <image class="preview-img" mode="aspectFill" :src="photo.url" />
               </div>
               <div v-else class="photo-placeholder">
                 <div class="placeholder-icon">
                   <text class="i-mdi-camera text-[#666]"></text>
                 </div>
-                <div class="placeholder-label">{{ label }}</div>
+                <div class="placeholder-label">{{ photo.label }}</div>
               </div>
             </div>
           </div>
@@ -99,31 +99,13 @@
               <span class="section-title">填写车牌号</span>
               <span class="section-required">必填</span>
             </div>
-            <span class="section-desc">请输入完整车牌号码</span>
           </div>
 
           <div class="plate-input-wrap">
-            <div class="plate-prefix">
-              <text>粤</text>
-            </div>
-            <div class="plate-divider" />
-            <input
-              v-model="plateNumber"
-              class="plate-input"
-              type="text"
-              placeholder="A12345"
-              placeholder-class="plate-placeholder"
-              :maxlength="6"
+            <car-number-input
+              :default-str="orderInfo.plate_number"
+              @numberInputResult="onListenNumber"
             />
-            <div v-if="plateNumber" class="plate-clear" @tap="plateNumber = ''">
-              <text class="clear-icon">✕</text>
-            </div>
-          </div>
-
-          <!-- 示例提示 -->
-          <div class="input-tip">
-            <text class="tip-icon">ℹ️</text>
-            <span class="tip-text">示例：粤A12345 · 新能源：粤AD12345</span>
           </div>
         </div>
 
@@ -138,13 +120,13 @@
             <span class="section-desc">拍摄车架号（VIN）铭牌特写，需清晰可见</span>
           </div>
 
-          <div class="vin-upload-area" @tap="onClickImage('frame_photo', 0)">
+          <div class="vin-upload-area" @tap="onClickImage('frame_photo', 0, 'after')">
             <div v-if="orderReqData.frame_photo" class="vin-preview">
-              <image class="vin-preview-img" mode="aspectFill" :src="orderReqData.frame_photo" />
-              <div class="vin-overlay">
-                <text class="vin-overlay-icon">✓</text>
-                <span>重新拍摄</span>
-              </div>
+              <image
+                class="vin-preview-img"
+                mode="aspectFill"
+                :src="getAfterUrl('frame_photo', 0)"
+              />
             </div>
             <div v-else class="vin-placeholder">
               <div class="vin-placeholder-icon">
@@ -175,7 +157,7 @@
 </template>
 
 <script setup lang="ts">
-import { getOrderInfoRes, startWorkRes } from '@/api'
+import { completeWorkRes, getOrderInfoRes, startWorkRes } from '@/api'
 import { useAppStore } from '@/stores/app'
 import test from '@/utils/test'
 import { toast } from '@/utils/uni'
@@ -187,7 +169,7 @@ interface RawCarPhoto {
   key: CarPhotoKey
   index: number
 }
-type ActionType = '1' | '2'
+type ActionType = 'before' | 'after'
 
 const baseUrl = import.meta.env.VITE_BASE_API,
   uploadUrl = `${baseUrl}/api/common/upload`,
@@ -214,52 +196,76 @@ const baseUrl = import.meta.env.VITE_BASE_API,
     },
   ]
 
-const { appToken } = storeToRefs(useAppStore())
+const appStore = useAppStore()
+const { appToken } = storeToRefs(appStore)
 const orderInfo = ref<IOrderItem>({} as IOrderItem),
   orderReqData = ref<OrderReqData>({} as OrderReqData),
   loading = ref(false),
   sidePhotos = ref<string[]>([]),
-  actionType = ref<'1' | '2'>('1')
+  actionType = ref<ActionType>('before')
 
-onLoad(async ({ id = 8, type = '1' }: { id?: string | number; type?: ActionType } = {}) => {
-  // type = 1 施工前拍照；type = 2 施工后拍照
+const beforeCarPhotos = computed(() =>
+  rawCarPhotos.map((photo) => ({
+    ...photo,
+    url: getBeforeUrl(photo.key, photo.index),
+    type: 'before',
+  })),
+)
+
+const afterCarPhotos = computed(() =>
+  rawCarPhotos.map((photo) => ({
+    ...photo,
+    url: getAfterUrl(photo.key, photo.index),
+    type: 'after',
+  })),
+)
+
+onLoad(async ({ id = 8, type = 'before' }: { id?: string | number; type?: ActionType } = {}) => {
+  // type = before 施工前拍照；type = after 施工后拍照
   actionType.value = type
   uni.setNavigationBarTitle({
-    title: type == '1' ? '施工前确认' : '施工后确认',
+    title: type == 'before' ? '施工前确认' : '施工后确认',
   })
-  if (!id) return
-  const data = await getOrderInfoRes(id)
-  orderInfo.value = data
-
-  if (type == '1') {
-    // 施工前
-    orderReqData.value = {
-      order_id: orderInfo.value.id,
-      front_photos: orderInfo.value.start_front_photos,
-      back_photos: orderInfo.value.start_back_photos,
-      side_photos: orderInfo.value.start_side_photos.join(),
+  if (id) {
+    const data = await getOrderInfoRes(id)
+    orderInfo.value = data
+    if (type == 'before') {
+      // 施工前
+      orderReqData.value = {
+        order_id: orderInfo.value.id,
+        front_photos: orderInfo.value.start_front_photos,
+        back_photos: orderInfo.value.start_back_photos,
+        side_photos: orderInfo.value.start_side_photos.join(),
+      }
+      sidePhotos.value = orderInfo.value.start_side_photos
+    } else {
+      // 施工后
+      orderReqData.value = {
+        order_id: orderInfo.value.id,
+        front_photos: orderInfo.value.end_front_photos,
+        back_photos: orderInfo.value.end_back_photos,
+        side_photos: orderInfo.value.end_side_photos.join(),
+        plate_number: orderInfo.value.plate_number,
+        frame_photo: orderInfo.value.frame_photo,
+      }
+      sidePhotos.value = orderInfo.value.end_side_photos
     }
-    sidePhotos.value = orderInfo.value.start_side_photos
-  } else {
-    // 施工后
-    orderReqData.value = {
-      order_id: orderInfo.value.id,
-      front_photos: orderInfo.value.end_front_photos,
-      back_photos: orderInfo.value.end_back_photos,
-      side_photos: orderInfo.value.end_side_photos.join(),
-    }
-    sidePhotos.value = orderInfo.value.end_side_photos
   }
 })
+
+function onListenNumber(e: any) {
+  orderReqData.value.plate_number = e
+}
 
 function getFullUrl(url: string) {
   return `${baseUrl}/${url}`
 }
 
 function getBeforeUrl(key: CarPhotoKey, index: number) {
-  if (actionType.value == '1') {
+  if (!orderInfo.value.id) return undefined
+  if (actionType.value == 'before') {
     const url = key == 'side_photos' ? sidePhotos.value[index] : orderReqData.value[key]
-    return test.url(url!) ? url : getFullUrl(url!)
+    return url ? (test.url(url) ? url : getFullUrl(url)) : url
   } else {
     const url =
       key == 'side_photos'
@@ -270,11 +276,12 @@ function getBeforeUrl(key: CarPhotoKey, index: number) {
 }
 
 function getAfterUrl(key: CarPhotoKey, index: number) {
+  if (!orderInfo.value.id) return undefined
   const url = key == 'side_photos' ? sidePhotos.value[index] : orderReqData.value[key]
-  return test.url(url!) ? url : getFullUrl(url!)
+  return url ? (test.url(url) ? url : getFullUrl(url)) : url
 }
 
-async function onChooseImage(key: CarPhotoKey, index: number) {
+async function chooseImage(key: CarPhotoKey, index: number) {
   uni.chooseImage({
     count: 1, // 最多拍摄数量
     sourceType: ['camera'], // 只使用相机
@@ -317,7 +324,30 @@ async function onChooseImage(key: CarPhotoKey, index: number) {
   })
 }
 
-function onClickImage(key: CarPhotoKey, index: number) {
+function onClickImage(key: CarPhotoKey, index: number, type: ActionType) {
+  if (actionType.value == 'after') {
+    // 施工后
+    if (type == 'before') {
+      let url = ''
+      if (key == 'side_photos') {
+        url = orderInfo.value.start_side_photos[index]
+      } else {
+        url = orderInfo.value[`start_${key}`]
+      }
+      url = test.url(url) ? url : getFullUrl(url)
+      uni.previewImage({
+        current: url,
+        urls: [url],
+      })
+    } else {
+      next(key, index)
+    }
+  } else {
+    next(key, index)
+  }
+}
+
+function next(key: CarPhotoKey, index: number) {
   let value
   if (key == 'side_photos') {
     value = sidePhotos.value[index]
@@ -335,28 +365,40 @@ function onClickImage(key: CarPhotoKey, index: number) {
             urls: [fullUrl],
           })
         } else {
-          onChooseImage(key, index)
+          chooseImage(key, index)
         }
       },
     })
   } else {
-    onChooseImage(key, index)
+    chooseImage(key, index)
   }
 }
 
-const plateNumber = ref('')
-
-const onSubmit = debounce(async () => {
-  try {
-    loading.value = true
-    await startWorkRes({
-      ...orderReqData.value,
-      side_photos: sidePhotos.value.join(),
-      order_id: orderInfo.value.id,
-    })
-  } finally {
-    loading.value = false
-  }
+const onSubmit = debounce(() => {
+  uni.showModal({
+    title: '提示',
+    content: '确认提交吗？一旦提交不可更改！',
+    async success({ confirm }) {
+      if (confirm) {
+        try {
+          loading.value = true
+          actionType.value == 'before'
+            ? await startWorkRes({
+                ...orderReqData.value,
+                order_id: orderInfo.value.id,
+              })
+            : await completeWorkRes({
+                ...orderReqData.value,
+                order_id: orderInfo.value.id,
+              })
+          appStore.markHomeOrderListNeedRefresh()
+          uni.navigateBack()
+        } finally {
+          loading.value = false
+        }
+      }
+    },
+  })
 }, 500)
 </script>
 
@@ -677,63 +719,6 @@ const onSubmit = debounce(async () => {
 
 // 车牌号输入
 .plate-input-wrap {
-  display: flex;
-  align-items: center;
-  height: 96rpx;
-  overflow: hidden;
-  background: #f8fafc;
-  border: 2rpx solid #e5e7eb;
-  border-radius: 20rpx;
-
-  &:focus-within {
-    border-color: #22c55e;
-    box-shadow: 0 0 0 4rpx rgb(34 197 94 / 10%);
-  }
-
-  .plate-prefix {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 96rpx;
-    height: 100%;
-    font-size: 36rpx;
-    font-weight: 700;
-    color: #1a1a2e;
-    background: #eef2ff;
-    border-right: 2rpx solid #e5e7eb;
-    letter-spacing: 2rpx;
-  }
-
-  .plate-divider {
-    display: none;
-  }
-
-  .plate-input {
-    flex: 1;
-    height: 100%;
-    padding: 0 24rpx;
-    font-size: 36rpx;
-    font-weight: 700;
-    color: #1a1a2e;
-    letter-spacing: 8rpx;
-    background: transparent;
-  }
-
-  .plate-clear {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 64rpx;
-    height: 64rpx;
-    margin-right: 16rpx;
-    background: #e5e7eb;
-    border-radius: 50%;
-
-    .clear-icon {
-      font-size: 22rpx;
-      color: #9ca3af;
-    }
-  }
 }
 
 .input-tip {
@@ -926,15 +911,10 @@ const onSubmit = debounce(async () => {
   right: 0;
   bottom: 0;
   left: 0;
-  z-index: 999;
+  z-index: 99;
   padding: 24rpx 32rpx calc(24rpx + env(safe-area-inset-bottom));
   background: #fff;
   border-top: 2rpx solid #f0f2f5;
   box-shadow: 0 -8rpx 32rpx rgb(0 0 0 / 6%);
-}
-
-// 占位符样式
-.plate-placeholder {
-  color: #d1d5db !important;
 }
 </style>

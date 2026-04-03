@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-export async function loginRes(data: ILoginReqData): Promise<IUserInfo> {
+export function loginRes(data: ILoginReqData): Promise<IUserInfo> {
   return request({
     url: '/api/user/account_login',
     method: 'post',
@@ -8,14 +8,14 @@ export async function loginRes(data: ILoginReqData): Promise<IUserInfo> {
   })
 }
 
-export async function getUserInfoRes(): Promise<IUserInfo> {
+export function getUserInfoRes(): Promise<IUserInfo> {
   return request({
     url: '/api/user/info',
     method: 'get',
   })
 }
 
-export async function getOrdersRes(data: IPageParams): Promise<IPageData<IOrderItem>> {
+export function getOrdersRes(data: IPageParams): Promise<IPageData<IOrderItem>> {
   return request({
     url: '/api/order/list',
     method: 'get',
@@ -23,7 +23,7 @@ export async function getOrdersRes(data: IPageParams): Promise<IPageData<IOrderI
   })
 }
 
-export async function getOrderInfoRes(order_id: number | string): Promise<IOrderItem> {
+export function getOrderInfoRes(order_id: number | string): Promise<IOrderItem> {
   return request({
     url: '/api/order/detail',
     method: 'get',
@@ -33,9 +33,17 @@ export async function getOrderInfoRes(order_id: number | string): Promise<IOrder
   })
 }
 
-export async function startWorkRes(data: OrderReqData): Promise<any> {
+export function startWorkRes(data: OrderReqData): Promise<any> {
   return request({
     url: '/api/order/start',
+    method: 'post',
+    data,
+  })
+}
+
+export function completeWorkRes(data: OrderReqData): Promise<any> {
+  return request({
+    url: '/api/order/complete',
     method: 'post',
     data,
   })
