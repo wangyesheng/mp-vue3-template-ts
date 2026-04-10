@@ -7,11 +7,10 @@
         </div>
 
         <div class="flex-1">
-          <div class="mb-2 text-lg font-bold tracking-tight text-gray-800">
+          <div class="mb-1 text-base font-bold tracking-tight text-[#121836]">
             {{ appUser?.nickname }}
           </div>
-          <div class="flex items-center gap-x-1 text-sm text-gray-400">
-            <span class="i-mdi-phone"></span>
+          <div class="flex items-center text-sm text-[#888]">
             <span>{{ appUser?.mobile }}</span>
           </div>
         </div>
@@ -78,7 +77,7 @@
                       <span class="value">{{ data.order_sn }}</span>
                     </div>
                     <div class="detail-item">
-                      <span class="icon i-mdi-car-wrench"></span>
+                      <span class="icon i-mdi-package-variant-closed"></span>
                       <span class="label">产品</span>
                       <span class="value">{{ data.product_name }}</span>
                     </div>
@@ -112,6 +111,19 @@
                       完成施工
                     </nut-button>
                   </div>
+                  <div v-if="item.key == 5" class="text-right">
+                    <nut-button
+                      v-if="data.aftersale_type == 1"
+                      block
+                      plain
+                      type="success"
+                      size="large"
+                      @click="navTo(`/pages/after-sale/index?id=${data.aftersale_id}`)"
+                    >
+                      处理售后
+                    </nut-button>
+                    <nut-tag v-else round plain type="warning"> 平台已更换新门店 </nut-tag>
+                  </div>
                 </div>
               </template>
             </PageList>
@@ -141,7 +153,7 @@ const orderTypes = ref<OrderType[]>([
   { key: 2, label: '施工中', instance: null },
   { key: 3, label: '待确认', instance: null },
   { key: 4, label: '已完成', instance: null },
-  { key: 5, label: '售后处理', instance: null },
+  { key: 5, label: '售后', instance: null },
 ])
 const appStore = useAppStore()
 const { appToken, appUser } = storeToRefs(appStore)
@@ -170,31 +182,27 @@ function refresh() {
     display: flex;
     gap: 24rpx;
     align-items: center;
-    padding: 32rpx;
     margin: 32rpx;
-    background: #fff;
-    border-radius: 24rpx;
-    box-shadow: 0 12rpx 40rpx rgb(34 197 94 / 10%);
 
     .avatar {
       position: relative;
       image {
-        width: 120rpx;
-        height: 120rpx;
+        width: 100rpx;
+        height: 100rpx;
         border-radius: 20rpx;
       }
 
-      &::after {
-        content: '';
-        width: 30rpx;
-        height: 30rpx;
-        border-radius: 50%;
-        background: var(--uvt-primary-color);
-        position: absolute;
-        bottom: 0;
-        right: -10rpx;
-        border: 2rpx solid #fff;
-      }
+      // &::after {
+      //   content: '';
+      //   width: 30rpx;
+      //   height: 30rpx;
+      //   border-radius: 50%;
+      //   background: var(--uvt-primary-color);
+      //   position: absolute;
+      //   bottom: 0;
+      //   right: -10rpx;
+      //   border: 2rpx solid #fff;
+      // }
     }
   }
 

@@ -6,7 +6,7 @@
         <!-- Logo 区域 -->
         <view class="logo-wrap">
           <view class="logo">
-            <text class="logo-icon">🚗</text>
+            <image class="h-16 w-16" src="@/static/images/logo.png"></image>
           </view>
           <text class="app-name">轩科施工管理端</text>
           <text class="app-desc">专业的汽车美容店管理助手</text>
@@ -132,8 +132,6 @@ const login = debounce(async () => {
         width: 160rpx;
         height: 160rpx;
         margin-bottom: 40rpx;
-        font-size: 80rpx;
-        background: linear-gradient(135deg, #2bf073, #22c55e, #1da54f);
         border-radius: 40rpx;
         box-shadow: 0 20rpx 60rpx rgba(34, 197, 94, 0.2);
       }

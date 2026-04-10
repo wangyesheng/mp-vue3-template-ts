@@ -56,16 +56,36 @@ page {
   }
 }
 
+.__title {
+  font-size: 34rpx;
+  color: #333;
+  font-weight: 550;
+  position: relative;
+
+  &::before {
+    content: '';
+    display: block;
+    width: 10rpx;
+    height: 50%;
+    border-radius: 50%;
+    background: var(--uvt-primary-color);
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+  }
+}
+
 .nut-empty {
   height: 100%;
   margin: auto;
 
   .nut-empty__box {
-    width: 195rpx;
+    width: 128rpx;
     height: 128rpx;
   }
 
   .nut-empty__description {
-    margin-top: 30rpx;
+    margin-top: 20rpx;
   }
 }

@@ -8,6 +8,12 @@
       }
     },
     {
+      "path": "pages/after-sale/index",
+      "style": {
+        "navigationBarTitleText": "处理售后"
+      }
+    },
+    {
       "path": "pages/completion/index",
       "style": {
         "navigationBarTitleText": "施工完成确认"

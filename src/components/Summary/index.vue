@@ -1,6 +1,5 @@
 <template>
   <div class="summary-card">
-    <div class="summary-bg-circle" />
     <div class="summary-top">
       <div class="summary-left">
         <div class="summary-label">2026-03结算总额</div>
@@ -8,10 +7,10 @@
           <span class="currency">¥</span>
           <span class="amount">12345.00</span>
         </div>
-        <div class="summary-stats">
+        <!-- <div class="summary-stats">
           <span class="stat-item"> <span class="dot settled" />已结算 10 单 </span>
           <span class="stat-item pending-text"> <span class="dot pending" />待结算 2 单 </span>
-        </div>
+        </div> -->
       </div>
       <div class="summary-icon">
         <text class="i-mdi-invoice-text-multiple-outline text-white"></text>
@@ -47,7 +46,7 @@
 <style lang="scss" scoped>
 .summary-card {
   position: relative;
-  padding: 40rpx 40rpx 36rpx;
+  padding: 30rpx 40rpx;
   overflow: hidden;
   background: linear-gradient(140deg, #22c55e 0%, #16a34a 100%);
   border-radius: 28rpx;
@@ -68,7 +67,7 @@
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    margin-bottom: 32rpx;
+    margin-bottom: 20rpx;
 
     .summary-left {
       .summary-label {
@@ -90,7 +89,7 @@
         }
 
         .amount {
-          font-size: 68rpx;
+          font-size: 60rpx;
           font-weight: 700;
           line-height: 1;
           color: #fff;

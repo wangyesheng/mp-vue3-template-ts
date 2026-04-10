@@ -26,7 +26,7 @@
   lang="ts"
   generic="T extends Record<string, any>, Q extends Record<string, any> = Record<string, never>"
 >
-// Record<string, never> = {}
+// Record<string, never> = Record<string, never> = {}
 // Record<string, never> 可以理解为“空对象参数类型”，你几乎不能往里放任何键值（因为值类型是 never）
 import { useAppStore } from '@/stores/app'
 

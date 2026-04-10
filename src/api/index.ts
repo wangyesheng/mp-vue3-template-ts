@@ -48,3 +48,43 @@ export function completeWorkRes(data: OrderReqData): Promise<any> {
     data,
   })
 }
+
+export function getAfterSaleTimelineRes(aftersale_id: string): Promise<IStepInfo[]> {
+  return request({
+    url: '/api/order/get_aftersale_timeline',
+    method: 'get',
+    data: {
+      aftersale_id,
+    },
+  })
+}
+
+export function getAfterSaleDetailRes(aftersale_id: string): Promise<IAfterSaleInfo> {
+  return request({
+    url: '/api/order/get_aftersale',
+    method: 'get',
+    data: {
+      aftersale_id,
+    },
+  })
+}
+
+export function startHandleAfterSaleRes(aftersale_id: number): Promise<any> {
+  return request({
+    url: '/api/order/store_handle_aftersale',
+    method: 'post',
+    data: {
+      aftersale_id,
+    },
+  })
+}
+
+export function completeHandleAfterSaleRes(aftersale_id: number): Promise<any> {
+  return request({
+    url: '/api/order/handle_aftersale_done',
+    method: 'post',
+    data: {
+      aftersale_id,
+    },
+  })
+}

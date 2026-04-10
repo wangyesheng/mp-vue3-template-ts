@@ -336,7 +336,7 @@ function onClickImage(key: CarPhotoKey, index: number, type: ActionType) {
       }
       url = test.url(url) ? url : getFullUrl(url)
       uni.previewImage({
-        current: url,
+        current: index,
         urls: [url],
       })
     } else {
@@ -361,7 +361,7 @@ function next(key: CarPhotoKey, index: number) {
       success(res) {
         if (res.tapIndex === 0) {
           uni.previewImage({
-            current: fullUrl,
+            current: index,
             urls: [fullUrl],
           })
         } else {

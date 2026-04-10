@@ -18,6 +18,8 @@ defineProps({
 const themeVars = reactive({
   primaryColor: '#22c55e',
   primaryColorEnd: '#22c55e',
+  warningColor: '#f97316',
+  warningColorEnd: '#f97316',
   tagPrimaryBackgroundColor: '#22c55e',
 })
 </script>

@@ -41,7 +41,7 @@ interface IOrderItem {
   end_side_photos: string[]
   plate_number: string
   frame_photo: string
-
+  aftersale_type: number
   [key: string]: any
 }
 
@@ -58,3 +58,21 @@ type OrderCarPhoto = Pick<
   OrderReqData,
   'front_photos' | 'side_photos' | 'back_photos' | 'frame_photo'
 >
+
+interface IStepInfo {
+  id: number
+  content: string
+  createtime: string
+  [key: string]: any
+}
+
+interface IAfterSaleInfo {
+  id: number
+  problem_desc: string
+  images: string[]
+  contact_name: string
+  contact_phone: string
+  createtime: string
+  handle_status: number
+  [key: string]: any
+}
