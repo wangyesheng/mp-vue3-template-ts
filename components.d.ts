@@ -42,7 +42,6 @@ declare module 'vue' {
     NutEmpty: typeof import('nutui-uniapp/components/empty/empty.vue')['default']
     NutIcon: typeof import('nutui-uniapp/components/icon/icon.vue')['default']
     NutInput: typeof import('nutui-uniapp/components/input/input.vue')['default']
-    NutPopup: typeof import('nutui-uniapp/components/popup/popup.vue')['default']
     NutStep: typeof import('nutui-uniapp/components/step/step.vue')['default']
     NutSteps: typeof import('nutui-uniapp/components/steps/steps.vue')['default']
     NutTabPane: typeof import('nutui-uniapp/components/tabpane/tabpane.vue')['default']

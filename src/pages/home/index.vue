@@ -3,7 +3,7 @@
     <div class="store">
       <div class="user-card">
         <div class="avatar">
-          <image class="shadow-md" mode="aspectFill" :src="appUser?.avatar" />
+          <image mode="aspectFill" :src="appUser?.avatar" />
         </div>
 
         <div class="flex-1">
@@ -21,11 +21,29 @@
       </div>
 
       <div class="section">
-        <div class="section-head">
+        <div class="section-head mb-3">
           <span class="title">结算概览</span>
           <span class="more" @click="navTo('/pages/settlement/index')">查看全部</span>
         </div>
-        <Summary />
+        <Summary :data="summaryInfo" />
+      </div>
+
+      <div class="section">
+        <div class="invoice-entry" @tap="navTo('/pages/invoice/index')">
+          <div class="invoice-entry-left">
+            <image src="@/static/images/invoice2.png" class="entry-icon"></image>
+            <div class="entry-info">
+              <div class="entry-title">待开发票</div>
+              <div class="entry-sub">
+                <span v-if="summaryInfo.un_invoiced_amount ?? 0 > 0">
+                  本月有 {{ summaryInfo.un_invoiced_count }} 单待开票，点击前往处理
+                </span>
+                <span v-else>本月暂无发票待开，点击查看往期开票数据</span>
+              </div>
+            </div>
+          </div>
+          <nut-icon name="rect-right" custom-color="#f28519" />
+        </div>
       </div>
 
       <!-- 订单管理 -->
@@ -34,12 +52,13 @@
           <span class="title">订单管理</span>
         </div>
 
-        <nut-tabs v-model="currentOrderType">
+        <nut-tabs v-model="currentOrderType" auto-height>
           <nut-tab-pane
             v-for="item in orderTypes"
             :key="item.key"
             :title="item.label"
             :pane-key="item.key"
+            :custom-class="currentOrderType == item.key ? 'mount' : 'unmount'"
           >
             <PageList
               :ref="(el) => setPageListRef(item, el)"
@@ -51,55 +70,61 @@
                 <div class="order-card">
                   <div class="card-header">
                     <div class="car-info">
-                      <div class="car-icon">
-                        <text>🚗</text>
-                      </div>
                       <div class="info">
                         <div class="name-wrap">
                           <span class="name">{{ data.vehicle_type }}</span>
                         </div>
-                        <div class="sn flex items-center gap-x-1">
-                          <span class="i-mdi-cellphone-android text-[#888]"></span>
-                          {{ data.user?.mobile }}
+                        <div class="sn">
+                          <span>订单号：{{ data.order_sn }}</span>
+                          <span class="copy" @click="copy(data.order_sn)">复制</span>
                         </div>
                       </div>
                     </div>
-                    <div class="price-wrap">
-                      <div class="price">¥ {{ data.hour_price }}</div>
-                      <div class="desc">工时费</div>
-                    </div>
+                    <span
+                      v-if="item.key == 4"
+                      class="status-tag"
+                      :class="[INVOICE_MAP[data.is_invoiced].type]"
+                    >
+                      {{ INVOICE_MAP[data.is_invoiced].label }}
+                    </span>
                   </div>
 
                   <div class="detail-list">
                     <div class="detail-item">
-                      <span class="icon i-mdi-invoice-text-multiple"></span>
-                      <span class="label">订单号</span>
-                      <span class="value">{{ data.order_sn }}</span>
+                      <span class="label">客户手机号</span>
+                      <span class="value">{{ data.user?.mobile }}</span>
                     </div>
                     <div class="detail-item">
-                      <span class="icon i-mdi-package-variant-closed"></span>
                       <span class="label">产品</span>
                       <span class="value">{{ data.product_name }}</span>
                     </div>
                     <div class="detail-item">
-                      <span class="icon i-mdi-car-wrench"></span>
                       <span class="label">服务项目</span>
                       <span class="value">{{ data.service_name }}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="label">工时费</span>
+                      <span class="value fee">¥ {{ data.hour_price }}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="label">奖励金</span>
+                      <span class="value fee">¥ {{ data.reward_price }}</span>
                     </div>
                   </div>
 
                   <div v-if="item.key == 1" class="actions">
-                    <nut-button block plain size="large" @click="callPhone(data.user?.mobile)">
-                      联系客户
-                    </nut-button>
-                    <nut-button
-                      block
-                      custom-color="#1a1a2e"
-                      size="large"
-                      @click="navTo(`/pages/completion/index?id=${data.id}&type=before`)"
-                    >
-                      开始施工 / 录入
-                    </nut-button>
+                    <div class="inner">
+                      <nut-button plain size="large" @click="callPhone(data.user?.mobile)">
+                        联系客户
+                      </nut-button>
+                      <nut-button
+                        custom-color="#1a1a2e"
+                        size="large"
+                        @click="navTo(`/pages/completion/index?id=${data.id}&type=before`)"
+                      >
+                        开始施工 / 录入
+                      </nut-button>
+                    </div>
                   </div>
                   <div v-if="item.key == 2" class="actions">
                     <nut-button
@@ -112,6 +137,9 @@
                     </nut-button>
                   </div>
                   <div v-if="item.key == 5" class="text-right">
+                    <nut-tag v-if="data.aftersale_type == 0" round plain type="warning">
+                      待平台处理
+                    </nut-tag>
                     <nut-button
                       v-if="data.aftersale_type == 1"
                       block
@@ -120,9 +148,11 @@
                       size="large"
                       @click="navTo(`/pages/after-sale/index?id=${data.aftersale_id}`)"
                     >
-                      处理售后
+                      {{ data.handle_status == 2 ? '查看售后' : '处理售后' }}
                     </nut-button>
-                    <nut-tag v-else round plain type="warning"> 平台已更换新门店 </nut-tag>
+                    <nut-tag v-if="data.aftersale_type == 2" round plain type="warning">
+                      平台已更换新门店
+                    </nut-tag>
                   </div>
                 </div>
               </template>
@@ -135,29 +165,51 @@
 </template>
 
 <script setup lang="ts">
-import { getOrdersRes } from '@/api'
+import { getOrdersRes, getOrderSummaryRes } from '@/api'
 import { setPageListRef } from '@/components/PageList/instance'
 import type { PageListInstanceHolder } from '@/components/PageList/instance'
+import { INVOICE_MAP } from '@/const'
 import { useAppStore } from '@/stores/app'
-import { callPhone, navTo } from '@/utils/uni'
+import { callPhone, copy, navTo } from '@/utils/uni'
+import dayjs from 'dayjs'
 
 type OrderTypeKey = 1 | 2 | 3 | 4 | 5
-
 interface OrderType extends PageListInstanceHolder {
   key: OrderTypeKey
   label: string
 }
 
-const orderTypes = ref<OrderType[]>([
-  { key: 1, label: '待施工', instance: null },
-  { key: 2, label: '施工中', instance: null },
-  { key: 3, label: '待确认', instance: null },
-  { key: 4, label: '已完成', instance: null },
-  { key: 5, label: '售后', instance: null },
-])
 const appStore = useAppStore()
 const { appToken, appUser } = storeToRefs(appStore)
-const currentOrderType = ref<OrderTypeKey>(1)
+
+const orderTypes = ref<OrderType[]>([
+    { key: 1, label: '待施工', instance: null },
+    { key: 2, label: '施工中', instance: null },
+    { key: 3, label: '待确认', instance: null },
+    { key: 4, label: '已完成', instance: null },
+    { key: 5, label: '售后', instance: null },
+  ]),
+  currentOrderType = ref<OrderTypeKey>(1),
+  summaryInfo = ref<Partial<ISummaryInfo>>({})
+
+function refresh() {
+  const current = orderTypes.value.find((x) => x.key == currentOrderType.value)
+  current?.instance?.refresh()
+}
+
+async function getOrderSummary() {
+  try {
+    uni.showLoading({
+      title: '数据加载中...',
+      mask: true,
+    })
+    const month = dayjs().format('YYYY-MM')
+    const data = await getOrderSummaryRes(month)
+    summaryInfo.value = data
+  } finally {
+    uni.hideLoading()
+  }
+}
 
 onShow(() => {
   if (!appToken.value) {
@@ -165,15 +217,14 @@ onShow(() => {
     return
   }
   // 仅从「施工/完工录入」等页面返回时需要拉最新列表；其它 onShow（切后台回来）不强制刷新
-  if (appStore.checkHomeOrderListNeedRefresh()) {
+  if (appStore.checkNeedRefresh()) {
     refresh()
   }
+
+  getOrderSummary()
 })
 
-function refresh() {
-  const current = orderTypes.value.find((x) => x.key == currentOrderType.value)
-  current?.instance?.refresh()
-}
+onPullDownRefresh(getOrderSummary)
 </script>
 
 <style lang="scss" scoped>
@@ -186,95 +237,66 @@ function refresh() {
 
     .avatar {
       position: relative;
-      image {
-        width: 100rpx;
-        height: 100rpx;
-        border-radius: 20rpx;
-      }
+      width: 130rpx;
+      height: 130rpx;
+      border: 4rpx solid #fff;
+      padding: 5rpx;
+      border-radius: 50%;
 
-      // &::after {
-      //   content: '';
-      //   width: 30rpx;
-      //   height: 30rpx;
-      //   border-radius: 50%;
-      //   background: var(--uvt-primary-color);
-      //   position: absolute;
-      //   bottom: 0;
-      //   right: -10rpx;
-      //   border: 2rpx solid #fff;
-      // }
+      image {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+      }
     }
   }
 
   ::v-deep() {
     .nut-tab-pane {
       padding: 0 !important;
+      margin-top: 10rpx !important;
       background: transparent !important;
+
+      &.mount {
+        height: 100% !important;
+      }
+
+      &.unmount {
+        height: 0 !important;
+      }
     }
   }
 
-  .dashboard {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24rpx;
-    padding: 32rpx;
+  .invoice-entry {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20rpx 30rpx;
+    background: linear-gradient(135deg, #fffaed, #ffe3be);
+    border: 2rpx solid #ffc375;
+    border-radius: 20rpx;
 
-    .data-card {
+    .invoice-entry-left {
       display: flex;
-      flex-direction: column;
+      gap: 20rpx;
       align-items: center;
-      padding: 32rpx;
-      background: #fff;
-      border-radius: 24rpx;
-      box-shadow: 0 4rpx 20rpx rgb(0 0 0 / 2%);
 
-      .icon-wrap {
-        display: flex;
-        align-items: center;
-        justify-content: center;
+      .entry-icon {
         width: 64rpx;
         height: 64rpx;
-        margin-bottom: 16rpx;
-        border-radius: 50%;
-
-        text {
-          font-size: 32rpx;
-        }
-
-        &.success {
-          color: #22c55e;
-          background: #dcfce7;
-        }
-
-        &.warning {
-          color: #f97316;
-          background: #ffedd5;
-        }
-
-        &.primary {
-          color: #3b82f6;
-          background: #e0e7ff;
-        }
-
-        &.purple {
-          color: #a855f7;
-          background: #f3e8ff;
-        }
       }
 
-      .label {
-        margin-bottom: 8rpx;
-        font-size: 26rpx;
-        color: #666;
-      }
+      .entry-info {
+        .entry-title {
+          margin-bottom: 5rpx;
+          font-size: 28rpx;
+          font-weight: 700;
+          color: #f28519;
+        }
 
-      .value {
-        font-size: 36rpx;
-        font-weight: bold;
-        color: #1a1a2e;
-
-        &.up {
-          color: #22c55e;
+        .entry-sub {
+          font-size: 24rpx;
+          color: #f28519;
         }
       }
     }
@@ -282,13 +304,12 @@ function refresh() {
 
   .section {
     padding: 0 32rpx;
-    margin-bottom: 48rpx;
+    margin-bottom: 30rpx;
 
     .section-head {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 24rpx;
 
       .title {
         font-size: 34rpx;
@@ -312,30 +333,25 @@ function refresh() {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 30rpx;
+        margin-bottom: 20rpx;
 
         .car-info {
           display: flex;
-          gap: 20rpx;
+          row-gap: 15rpx;
           align-items: center;
-          width: 70%;
+          width: 80%;
 
           .car-icon {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 80rpx;
-            height: 80rpx;
-            background: #f5f6fa;
+            width: 64rpx;
+            height: 64rpx;
             border-radius: 20rpx;
 
-            text {
-              font-size: 40rpx;
-            }
-
-            &.success {
-              color: #22c55e;
-              background: #dcfce7;
+            image {
+              width: 100%;
+              height: 100%;
             }
           }
 
@@ -344,36 +360,27 @@ function refresh() {
 
             .name-wrap {
               display: flex;
-              gap: 12rpx;
               align-items: center;
-              margin-bottom: 8rpx;
+              column-gap: 10rpx;
+              margin-bottom: 10rpx;
 
               .name {
                 font-size: 32rpx;
                 font-weight: bold;
                 color: #1a1a2e;
               }
-
-              .tag {
-                padding: 4rpx 12rpx;
-                font-size: 20rpx;
-                border-radius: 8rpx;
-
-                &.pending {
-                  color: #94a3b8;
-                  background: #f1f5f9;
-                }
-
-                &.done {
-                  color: #22c55e;
-                  background: #dcfce7;
-                }
-              }
             }
 
             .sn {
               font-size: 24rpx;
               color: #888;
+              display: flex;
+              align-items: center;
+              column-gap: 10rpx;
+
+              .copy {
+                color: #22c55e;
+              }
             }
           }
         }
@@ -418,6 +425,55 @@ function refresh() {
             color: #999;
           }
         }
+
+        .status-tag {
+          padding: 6rpx 15rpx;
+          font-size: 24rpx;
+          border-radius: 30rpx;
+
+          &.reject {
+            color: #cf1322;
+            background: #fff1f0;
+          }
+
+          &.done {
+            color: #22c55e;
+            background: #dcfce7;
+          }
+
+          &.confirm {
+            color: #1d39c4;
+            background: #f0f5ff;
+          }
+
+          &.wait {
+            color: #595959;
+            background: #f5f5f5;
+          }
+        }
+
+        .fee-tags {
+          display: flex;
+          flex-direction: column;
+          gap: 10rpx;
+
+          .fee-tag {
+            padding: 6rpx 12rpx;
+            font-size: 24rpx;
+            color: #22c55e;
+            background: #ebf9f0;
+            border-radius: 8rpx;
+
+            label:first-child {
+              margin-right: 5rpx;
+            }
+
+            &.reward {
+              color: #f59e0b;
+              background: #fffbeb;
+            }
+          }
+        }
       }
 
       .detail-list {
@@ -425,7 +481,7 @@ function refresh() {
         flex-direction: column;
         gap: 16rpx;
         padding: 24rpx;
-        margin-bottom: 32rpx;
+        margin-bottom: 20rpx;
         background: #f8fafc;
         border-radius: 20rpx;
 
@@ -450,6 +506,11 @@ function refresh() {
             font-weight: 500;
             color: #1a1a2e;
             text-align: right;
+
+            &.fee {
+              color: #22c55e;
+              font-size: 30rpx;
+            }
           }
         }
       }
@@ -458,6 +519,17 @@ function refresh() {
         display: flex;
         flex-direction: column;
         gap: 16rpx;
+
+        .inner {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          :deep() {
+            button {
+              width: 45%;
+            }
+          }
+        }
       }
 
       &.mini {
@@ -493,133 +565,6 @@ function refresh() {
             &.invoiced {
               color: #22c55e;
               background: #dcfce7;
-            }
-          }
-        }
-      }
-    }
-
-    .invoice-entry {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 28rpx 32rpx;
-      margin-top: 16rpx;
-      background: linear-gradient(135deg, #fffbeb, #fef9c3);
-      border: 2rpx solid #fde68a;
-      border-radius: 20rpx;
-
-      .invoice-entry-left {
-        display: flex;
-        gap: 20rpx;
-        align-items: center;
-
-        .entry-icon {
-          font-size: 48rpx;
-        }
-
-        .entry-info {
-          .entry-title {
-            margin-bottom: 6rpx;
-            font-size: 30rpx;
-            font-weight: 700;
-            color: #92400e;
-          }
-
-          .entry-sub {
-            font-size: 24rpx;
-            color: #b45309;
-          }
-        }
-      }
-
-      .entry-arrow {
-        font-size: 44rpx;
-        font-weight: 300;
-        color: #d97706;
-      }
-    }
-
-    .after-sale-card {
-      display: flex;
-      overflow: hidden;
-      background: #fff;
-      border-left: 10rpx solid #f97316;
-      border-radius: 24rpx;
-      box-shadow: 0 4rpx 24rpx rgb(0 0 0 / 3%);
-
-      .card-content {
-        flex: 1;
-        padding: 32rpx;
-
-        .header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 12rpx;
-
-          .title {
-            font-size: 30rpx;
-            font-weight: bold;
-            color: #1a1a2e;
-          }
-
-          .tag {
-            padding: 4rpx 12rpx;
-            font-size: 22rpx;
-            border-radius: 8rpx;
-
-            &.warning {
-              color: #f97316;
-              background: #fff7ed;
-            }
-          }
-        }
-
-        .time {
-          margin-bottom: 24rpx;
-          font-size: 24rpx;
-          color: #888;
-        }
-
-        .desc-box {
-          padding: 20rpx;
-          margin-bottom: 32rpx;
-          font-size: 26rpx;
-          line-height: 1.5;
-          background: #f8fafc;
-          border-radius: 12rpx;
-
-          .label {
-            font-weight: bold;
-            color: #333;
-          }
-
-          .content {
-            color: #666;
-          }
-        }
-
-        .actions {
-          display: flex;
-          gap: 32rpx;
-          align-items: center;
-          justify-content: flex-end;
-
-          .btn-text {
-            font-size: 28rpx;
-            color: #888;
-          }
-
-          .btn-primary {
-            height: 64rpx;
-            padding: 0 40rpx;
-            font-size: 26rpx;
-            border-radius: 12rpx;
-
-            &.orange {
-              background: #f97316;
-              border-color: #f97316;
             }
           }
         }

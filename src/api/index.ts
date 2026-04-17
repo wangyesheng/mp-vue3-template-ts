@@ -88,3 +88,57 @@ export function completeHandleAfterSaleRes(aftersale_id: number): Promise<any> {
     },
   })
 }
+
+export function getInvoiceOverviewRes(month: string): Promise<IInvoiceOverviewInfo> {
+  return request({
+    url: '/api/invoice/overview',
+    method: 'get',
+    data: {
+      month,
+    },
+  })
+}
+
+export function getInvoiceListRes(data: IPageParams): Promise<IPageData<IInvoiceItem>> {
+  return request({
+    url: '/api/invoice/list',
+    method: 'get',
+    data,
+  })
+}
+
+export function getInvoiceDetailRes(order_ids: string): Promise<IInvoiceApplyInfo> {
+  return request({
+    url: '/api/invoice/detail',
+    method: 'get',
+    data: {
+      order_ids,
+    },
+  })
+}
+
+export function applyInvoiceRes(data: any): Promise<any> {
+  return request({
+    url: '/api/invoice/apply',
+    method: 'post',
+    data,
+  })
+}
+
+export function getOrderSummaryRes(month: string): Promise<ISummaryInfo> {
+  return request({
+    url: '/api/order/overview',
+    method: 'get',
+    data: {
+      month,
+    },
+  })
+}
+
+export function getOrderSummaryListRes(data: IPageParams): Promise<any> {
+  return request({
+    url: '/api/order/settle_list',
+    method: 'get',
+    data,
+  })
+}

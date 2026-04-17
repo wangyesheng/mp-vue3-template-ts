@@ -11,18 +11,22 @@
         <div class="grid grid-cols-1 gap-3">
           <div class="flex items-center justify-between">
             <span class="text-sm text-slate-400">订单号</span>
-            <span class="font-mono text-sm font-medium text-slate-700">{{
-              orderInfo.order_sn
-            }}</span>
+            <span class="text-sm font-medium text-slate-700">{{ orderInfo.order_sn }}</span>
           </div>
           <div class="flex items-center justify-between">
             <span class="text-sm text-slate-400">车辆</span>
             <span class="text-sm font-medium text-slate-700">{{ orderInfo.vehicle_type }}</span>
           </div>
           <div class="flex items-center justify-between">
+            <span class="text-sm text-slate-400">产品</span>
+            <span class="text-sm font-medium text-slate-700">
+              {{ orderInfo.product_name }}
+            </span>
+          </div>
+          <div class="flex items-center justify-between">
             <span class="text-sm text-slate-400">服务</span>
-            <span class="text-sm font-medium text-emerald-700">
-              {{ orderInfo.product_name }} - {{ orderInfo.service_name }}
+            <span class="text-sm font-medium text-slate-700">
+              {{ orderInfo.service_name }}
             </span>
           </div>
         </div>
@@ -47,9 +51,10 @@
             class="photo-item"
             @tap="onClickImage(photo.key, photo.index, photo.type as ActionType)"
           >
-            <div v-if="photo.url" class="photo-preview">
+            <div v-if="photo.url" class="photo-placeholder">
               <image class="preview-img" mode="aspectFill" :src="photo.url" />
             </div>
+
             <div v-else class="photo-placeholder">
               <div class="placeholder-icon">
                 <text class="i-mdi-camera text-[#666]"></text>
@@ -78,7 +83,7 @@
               class="photo-item"
               @tap="onClickImage(photo.key, photo.index, photo.type as ActionType)"
             >
-              <div v-if="photo.url" class="photo-preview">
+              <div v-if="photo.url" class="photo-placeholder">
                 <image class="preview-img" mode="aspectFill" :src="photo.url" />
               </div>
               <div v-else class="photo-placeholder">
@@ -121,7 +126,7 @@
           </div>
 
           <div class="vin-upload-area" @tap="onClickImage('frame_photo', 0, 'after')">
-            <div v-if="orderReqData.frame_photo" class="vin-preview">
+            <div v-if="orderReqData.frame_photo" class="vin-placeholder">
               <image
                 class="vin-preview-img"
                 mode="aspectFill"
@@ -130,7 +135,7 @@
             </div>
             <div v-else class="vin-placeholder">
               <div class="vin-placeholder-icon">
-                <text>📸</text>
+                <text class="i-mdi-camera text-[#666]"></text>
               </div>
               <div class="vin-placeholder-main">点击拍摄车架号</div>
               <div class="vin-placeholder-sub">支持相册选取</div>
@@ -284,7 +289,7 @@ function getAfterUrl(key: CarPhotoKey, index: number) {
 async function chooseImage(key: CarPhotoKey, index: number) {
   uni.chooseImage({
     count: 1, // 最多拍摄数量
-    sourceType: ['camera'], // 只使用相机
+    sourceType: ['camera', 'album'], // 只使用相机
     sizeType: ['compressed'], // 压缩图片
     async success(res) {
       uni.uploadFile({
@@ -391,7 +396,7 @@ const onSubmit = debounce(() => {
                 ...orderReqData.value,
                 order_id: orderInfo.value.id,
               })
-          appStore.markHomeOrderListNeedRefresh()
+          appStore.markNeedRefresh()
           uni.navigateBack()
         } finally {
           loading.value = false
@@ -528,7 +533,6 @@ const onSubmit = debounce(() => {
 .process-photos {
   display: flex;
   gap: 20rpx;
-  margin-bottom: 32rpx;
 
   .photo-item {
     position: relative;
@@ -539,13 +543,13 @@ const onSubmit = debounce(() => {
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 200rpx;
+      height: 150rpx;
       background: #f8fafc;
       border: 2rpx dashed #d1d5db;
       border-radius: 20rpx;
+      padding: 5rpx;
 
       .placeholder-icon {
-        margin-bottom: 12rpx;
         font-size: 44rpx;
       }
 
@@ -553,61 +557,11 @@ const onSubmit = debounce(() => {
         font-size: 24rpx;
         color: #9ca3af;
       }
-    }
-
-    .photo-preview {
-      position: relative;
-      height: 200rpx;
-      overflow: hidden;
-      border-radius: 20rpx;
 
       .preview-img {
         width: 100%;
         height: 100%;
-      }
-
-      .photo-delete {
-        position: absolute;
-        top: 8rpx;
-        right: 8rpx;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 44rpx;
-        height: 44rpx;
-        background: rgb(0 0 0 / 50%);
-        border-radius: 50%;
-
-        .delete-icon {
-          font-size: 20rpx;
-          color: #fff;
-        }
-      }
-    }
-
-    .photo-stage {
-      position: absolute;
-      bottom: 12rpx;
-      left: 50%;
-      padding: 4rpx 14rpx;
-      font-size: 22rpx;
-      font-weight: 600;
-      border-radius: 20rpx;
-      transform: translateX(-50%);
-
-      &.before {
-        color: #3b82f6;
-        background: rgb(59 130 246 / 15%);
-      }
-
-      &.during {
-        color: #f97316;
-        background: rgb(249 115 22 / 15%);
-      }
-
-      &.after {
-        color: #22c55e;
-        background: rgb(34 197 94 / 15%);
+        border-radius: 20rpx;
       }
     }
   }
@@ -739,7 +693,6 @@ const onSubmit = debounce(() => {
 
 // 车架号上传区
 .vin-upload-area {
-  margin-bottom: 28rpx;
   overflow: hidden;
   border-radius: 20rpx;
 
@@ -752,10 +705,10 @@ const onSubmit = debounce(() => {
     background: #f8fafc;
     border: 2rpx dashed #d1d5db;
     border-radius: 20rpx;
+    padding: 10rpx;
 
     .vin-placeholder-icon {
-      margin-bottom: 16rpx;
-      font-size: 64rpx;
+      font-size: 50rpx;
     }
 
     .vin-placeholder-main {
@@ -769,53 +722,11 @@ const onSubmit = debounce(() => {
       font-size: 24rpx;
       color: #9ca3af;
     }
-  }
-
-  .vin-preview {
-    position: relative;
-    height: 240rpx;
 
     .vin-preview-img {
       width: 100%;
       height: 100%;
-    }
-
-    .vin-delete {
-      position: absolute;
-      top: 12rpx;
-      right: 12rpx;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 52rpx;
-      height: 52rpx;
-      background: rgb(0 0 0 / 50%);
-      border-radius: 50%;
-
-      .delete-icon {
-        font-size: 22rpx;
-        color: #fff;
-      }
-    }
-
-    .vin-overlay {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      display: flex;
-      gap: 8rpx;
-      align-items: center;
-      justify-content: center;
-      height: 64rpx;
-      font-size: 26rpx;
-      color: #fff;
-      background: linear-gradient(transparent, rgb(0 0 0 / 60%));
-
-      .vin-overlay-icon {
-        font-size: 28rpx;
-        color: #22c55e;
-      }
+      border-radius: 20rpx;
     }
   }
 }

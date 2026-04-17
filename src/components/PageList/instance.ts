@@ -6,7 +6,8 @@ import type { ComponentPublicInstance } from 'vue'
  */
 export interface PageListInstance extends ComponentPublicInstance {
   refresh: () => Promise<void>
-  getData: () => unknown
+  getData: () => []
+  getSelectedKeys: () => []
 }
 
 /** 需要挂上 PageList 实例的对象（例如 Tab 项），必须传「对象」才能在内部执行 holder.instance = el */

@@ -2,10 +2,10 @@
   <div class="summary-card">
     <div class="summary-top">
       <div class="summary-left">
-        <div class="summary-label">2026-03结算总额</div>
+        <div class="summary-label">{{ data.current_month }} 结算总额</div>
         <div class="summary-amount">
           <span class="currency">¥</span>
-          <span class="amount">12345.00</span>
+          <span class="amount">{{ data.total_amount }}</span>
         </div>
         <!-- <div class="summary-stats">
           <span class="stat-item"> <span class="dot settled" />已结算 10 单 </span>
@@ -13,35 +13,44 @@
         </div> -->
       </div>
       <div class="summary-icon">
-        <text class="i-mdi-invoice-text-multiple-outline text-white"></text>
+        <!-- <text class="i-mdi-invoice-text-multiple-outline text-white"></text> -->
+        <image src="@/static/images/money1.png"></image>
       </div>
     </div>
     <div class="summary-divider" />
     <div class="summary-bottom">
       <div class="summary-item">
-        <div class="item-icon work">
+        <!-- <div class="item-icon work">
           <text class="i-mdi-cog-outline text-white"></text>
-        </div>
+        </div> -->
         <div class="item-info">
           <div class="item-label">工时费</div>
-          <div class="item-value">¥ 1000</div>
+          <div class="item-value">¥ {{ data.hour_amount }}</div>
         </div>
       </div>
       <div class="summary-sep" />
       <div class="summary-item">
-        <div class="item-icon">
+        <!-- <div class="item-icon">
           <text class="i-mdi-trophy-outline text-white"></text>
-        </div>
-        <div class="item-info">
+        </div> -->
+        <div class="item-info reward">
           <div class="item-label">奖励金</div>
-          <div class="item-value reward-val">¥ 200</div>
+          <div class="item-value reward-val">¥ {{ data.reward_amount }}</div>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+export interface ISummaryProps {
+  data?: Partial<ISummaryInfo>
+}
+
+const _props = withDefaults(defineProps<ISummaryProps>(), {
+  data: () => ({}),
+})
+</script>
 
 <style lang="scss" scoped>
 .summary-card {
@@ -65,9 +74,8 @@
 
   .summary-top {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
-    margin-bottom: 20rpx;
 
     .summary-left {
       .summary-label {
@@ -80,7 +88,6 @@
         display: flex;
         gap: 6rpx;
         align-items: baseline;
-        margin-bottom: 20rpx;
 
         .currency {
           font-size: 32rpx;
@@ -139,12 +146,17 @@
       font-size: 48rpx;
       background: rgb(255 255 255 / 18%);
       border-radius: 24rpx;
+
+      image {
+        width: 64rpx;
+        height: 64rpx;
+      }
     }
   }
 
   .summary-divider {
     height: 1rpx;
-    margin-bottom: 32rpx;
+    margin: 32rpx 0;
     background: rgb(255 255 255 / 20%);
   }
 
@@ -170,8 +182,8 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 82rpx;
-        height: 82rpx;
+        width: 60rpx;
+        height: 60rpx;
         font-size: 36rpx;
         border-radius: 18rpx;
         background: rgb(255 255 255 / 15%);
@@ -185,9 +197,13 @@
         }
 
         .item-value {
-          font-size: 36rpx;
+          font-size: 32rpx;
           font-weight: 700;
           color: #fff;
+        }
+
+        &.reward {
+          text-align: right;
         }
       }
     }

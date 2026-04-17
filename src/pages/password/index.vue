@@ -10,7 +10,7 @@
         <view class="form">
           <view class="form-item">
             <view class="form-item__prefix">
-              <text class="i-mdi-phone text-[42rpx] text-[#333]"></text>
+              <text class="i-mdi-cellphone-iphone text-[42rpx] text-[#333]"></text>
             </view>
             <nut-input
               v-model="form.mobile"

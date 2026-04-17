@@ -76,3 +76,37 @@ interface IAfterSaleInfo {
   handle_status: number
   [key: string]: any
 }
+
+interface IInvoiceOverviewInfo {
+  un_invoiced_amount: string
+  un_invoiced_count: number
+  invoiced_amount: number
+  invoiced_count: number
+  current_month: string
+}
+
+interface IInvoiceItem {
+  id: number
+  order_sn: string
+  vehicle_type: string
+  service_name: string
+  hour_price: string
+  reward_price: string
+  total_amount: string
+  is_special_text: string
+  is_construction_text: string
+  status_text: string
+}
+
+interface IInvoiceApplyInfo {
+  total_number: number
+  total_price: string
+  invoice_info: { label: string; value: string }[]
+}
+
+interface ISummaryInfo extends IInvoiceOverviewInfo {
+  total_amount: string
+  hour_amount: string
+  reward_amount: string
+  current_month: string
+}

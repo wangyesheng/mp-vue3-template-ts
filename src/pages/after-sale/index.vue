@@ -69,7 +69,10 @@ import {
   getAfterSaleTimelineRes,
   startHandleAfterSaleRes,
 } from '@/api'
+import { useAppStore } from '@/stores/app'
 import { callPhone, previewImage } from '@/utils/uni'
+
+const appStore = useAppStore()
 
 let currentId: string | undefined
 const steps = ref<IStepInfo[]>([]),
@@ -85,8 +88,11 @@ function onHandleAfterSale() {
         afterSaleInfo.value.handle_status == 0
           ? await startHandleAfterSaleRes(afterSaleInfo.value.id!)
           : await completeHandleAfterSaleRes(afterSaleInfo.value.id!)
-
         await getSaleInfo()
+        if (afterSaleInfo.value.handle_status == 2) {
+          appStore.markNeedRefresh()
+          uni.navigateBack()
+        }
       }
     },
   })
@@ -108,6 +114,7 @@ onLoad(async ({ id }: { id?: string } = {}) => {
 <style lang="scss" scoped>
 .timeline {
   padding: 0 20rpx;
+  padding-bottom: 100rpx;
 
   :deep() {
     .nut-cell-group__wrap,

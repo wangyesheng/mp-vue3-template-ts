@@ -23,22 +23,20 @@ const props = defineProps({
     default: undefined,
   },
 })
-
 const emits = defineEmits(['update:modelValue'])
 
-const DEFAULT_VALUE = dayjs().format('YYYY-M')
-
-// 内部状态以 modelValue 为初始值，未传时退回到今天
-const initDate = dayjs(props.modelValue ?? DEFAULT_VALUE)
-const currentYear = ref(initDate.year())
-const currentMonth = ref(initDate.month() + 1)
-
-const monthLabel = computed(() => `${currentYear.value} 年 ${currentMonth.value} 月`)
+const DEFAULT_VALUE = dayjs().format('YYYY-MM')
 
 const isCurrentMonth = computed(() => {
-  const now = dayjs()
-  return now.year() === currentYear.value && now.month() + 1 === currentMonth.value
-})
+    const now = dayjs()
+    return now.format('YYYY-MM') == props.modelValue
+  }),
+  monthLabel = computed(() => {
+    const date = dayjs(props.modelValue),
+      y = date.year(),
+      m = date.month() + 1
+    return `${y} 年 ${m} 月`
+  })
 
 // 父组件没传 v-model 时，挂载后主动 emit 默认值，让父组件同步拿到
 onMounted(() => {
@@ -48,26 +46,14 @@ onMounted(() => {
 })
 
 function prev() {
-  const d = dayjs()
-    .year(currentYear.value)
-    .month(currentMonth.value - 1)
-    .subtract(1, 'month')
-  currentYear.value = d.year()
-  currentMonth.value = d.month() + 1
-  emits('update:modelValue', `${currentYear.value}-${currentMonth.value}`)
+  const d = dayjs(props.modelValue).subtract(1, 'month')
+  emits('update:modelValue', d.format('YYYY-MM'))
 }
 
 function next() {
-  if (isCurrentMonth.value) {
-    return
-  }
-  const d = dayjs()
-    .year(currentYear.value)
-    .month(currentMonth.value - 1)
-    .add(1, 'month')
-  currentYear.value = d.year()
-  currentMonth.value = d.month() + 1
-  emits('update:modelValue', `${currentYear.value}-${currentMonth.value}`)
+  if (isCurrentMonth.value) return
+  const d = dayjs(props.modelValue).add(1, 'month')
+  emits('update:modelValue', d.format('YYYY-MM'))
 }
 </script>
 
@@ -78,7 +64,6 @@ function next() {
   align-items: center;
   justify-content: space-between;
   padding: 24rpx 32rpx;
-  margin: 0 32rpx 24rpx;
   background: #fff;
   border-radius: 24rpx;
   box-shadow: 0 4rpx 20rpx rgb(0 0 0 / 4%);

@@ -1,15 +1,35 @@
 <template>
-  <view v-if="data?.length > 0" id="pageListWrap" class="page-wrap">
-    <view class="page-list">
+  <view v-if="data?.length > 0" id="pageListWrap" class="page-list-wrap">
+    <view v-if="renderType == 'text'" class="page-inner">
       <view v-for="(item, index) in data" :key="index" class="page-item">
         <slot name="item" :data="item" />
       </view>
     </view>
+    <view v-if="renderType == 'checkbox'" class="page-inner">
+      <nut-checkbox
+        v-model="selectedAll"
+        :indeterminate="indeterminate"
+        @change="onToggleSelectAll"
+      >
+        <div class="flex items-center justify-between text-sm font-[550]">
+          <span>全选</span>
+          <span class="text-xs text-[var(--uvt-primary-color)]">
+            已选 {{ selectedKeys.length }} 项
+          </span>
+        </div>
+      </nut-checkbox>
+      <nut-checkbox-group ref="checkboxGroupRef" v-model="selectedKeys" @change="onGroupChange">
+        <nut-checkbox v-for="(item, index) in data" :key="index" :label="item.id">
+          <slot name="item" :data="item" />
+        </nut-checkbox>
+      </nut-checkbox-group>
+    </view>
+
     <view
       v-if="pageInfo.end && isOverScreen"
       class="relative flex h-[6vh] items-center justify-center text-[28rpx] text-[#999]"
     >
-      没有更多了
+      没有更多了...
     </view>
     <view v-if="pageInfo.loading && !isRefresh" class="relative h-[6vh]">
       <Loading position="absoluted" />
@@ -29,20 +49,24 @@
 // Record<string, never> = Record<string, never> = {}
 // Record<string, never> 可以理解为“空对象参数类型”，你几乎不能往里放任何键值（因为值类型是 never）
 import { useAppStore } from '@/stores/app'
+import type { CheckboxGroupInst } from 'nutui-uniapp'
 
+type RenderType = 'text' | 'radio' | 'checkbox'
 interface PageListProps {
   api: (params: IPageParams & Q) => Promise<{ total: number; data: T[] } | T[]>
   active?: boolean
   params?: Q
   limit?: number
   contentFullHeight?: number
+  renderType?: RenderType
 }
 
 const props = withDefaults(defineProps<PageListProps>(), {
-  active: true,
+  active: false,
   params: () => ({}) as Q,
   limit: 10,
   contentFullHeight: () => uni.getSystemInfoSync().windowHeight,
+  renderType: 'text',
 })
 
 const { appToken } = storeToRefs(useAppStore())
@@ -58,7 +82,11 @@ const pageInfo = ref({
   data = ref<T[]>([]) as Ref<T[]>,
   isOverScreen = ref(false),
   isRefresh = ref(false),
-  isError = ref(false)
+  isError = ref(false),
+  checkboxGroupRef = ref<CheckboxGroupInst>(),
+  selectedKeys = ref([]),
+  indeterminate = ref(false), // 当前是否支持半选状态，一般用在全选操作中
+  selectedAll = ref(false)
 
 watch(
   () => props.active,
@@ -71,6 +99,21 @@ watch(
     immediate: true,
   },
 )
+
+function onGroupChange(values: any[]) {
+  if (values.length >= data.value.length) {
+    indeterminate.value = false
+    selectedAll.value = true
+  } else if (values.length > 0) {
+    indeterminate.value = true
+  } else {
+    indeterminate.value = false
+    selectedAll.value = false
+  }
+}
+function onToggleSelectAll(checked: boolean) {
+  checkboxGroupRef.value?.toggleAll(checked)
+}
 
 async function getData(page?: number) {
   if (!appToken.value) return
@@ -164,6 +207,7 @@ defineExpose({
   async refresh() {
     try {
       isRefresh.value = true
+      await nextTick()
       await getData(1)
     } finally {
       isRefresh.value = false
@@ -172,15 +216,8 @@ defineExpose({
   getData() {
     return data.value
   },
+  getSelectedKeys() {
+    return selectedKeys.value
+  },
 })
 </script>
-
-<style lang="scss" scoped>
-.page-wrap {
-  .page-list {
-    display: flex;
-    flex-direction: column;
-    row-gap: 20rpx;
-  }
-}
-</style>

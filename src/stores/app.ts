@@ -25,16 +25,16 @@ export const useAppStore = defineStore('auth', () => {
     uni.reLaunch({ url: '/pages/login/index' })
   }
 
-  /** 施工完成等页面 navigateBack 后，首页订单列表需要强制刷新时置位 */
-  const homeOrderListNeedRefresh = ref(false)
-  function markHomeOrderListNeedRefresh() {
-    homeOrderListNeedRefresh.value = true
+  /** 等页面 navigateBack 后，列表需要强制刷新时置位 */
+  const needRefresh = ref(false)
+  function markNeedRefresh() {
+    needRefresh.value = true
   }
 
   /** 首页 onShow 调用：若为 true 则清空并返回 true，只消费一次 */
-  function checkHomeOrderListNeedRefresh() {
-    if (!homeOrderListNeedRefresh.value) return false
-    homeOrderListNeedRefresh.value = false
+  function checkNeedRefresh() {
+    if (!needRefresh.value) return false
+    needRefresh.value = false
     return true
   }
 
@@ -45,7 +45,7 @@ export const useAppStore = defineStore('auth', () => {
     setAppToken,
     setAppUser,
     refreshAppUser,
-    markHomeOrderListNeedRefresh,
-    checkHomeOrderListNeedRefresh,
+    markNeedRefresh,
+    checkNeedRefresh,
   }
 })

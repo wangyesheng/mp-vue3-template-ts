@@ -8,6 +8,19 @@
       }
     },
     {
+      "path": "pages/invoice/index",
+      "style": {
+        "navigationBarTitleText": "待开发票",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/invoice/apply",
+      "style": {
+        "navigationBarTitleText": "开具发票"
+      }
+    },
+    {
       "path": "pages/after-sale/index",
       "style": {
         "navigationBarTitleText": "处理售后"
@@ -20,15 +33,10 @@
       }
     },
     {
-      "path": "pages/invoice/index",
-      "style": {
-        "navigationBarTitleText": "待结算资金管理"
-      }
-    },
-    {
       "path": "pages/settlement/index",
       "style": {
-        "navigationBarTitleText": "结算明细"
+        "navigationBarTitleText": "结算明细",
+        "enablePullDownRefresh": true
       }
     },
     {
