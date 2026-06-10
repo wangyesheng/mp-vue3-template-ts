@@ -38,7 +38,7 @@
           <div class="section-title-wrap">
             <div class="section-dot" />
             <span class="section-title">上传施工前照片</span>
-            <span class="section-required">必填</span>
+            <span class="section-required">选填</span>
           </div>
           <span class="section-desc">车辆前1张、车辆侧面2张、车辆后1张</span>
         </div>
@@ -382,7 +382,10 @@ function next(key: CarPhotoKey, index: number) {
 const onSubmit = debounce(() => {
   uni.showModal({
     title: '提示',
-    content: '确认提交吗？一旦提交不可更改！',
+    content:
+      actionType.value == 'before'
+        ? '为避免产生施工纠纷，请施工前和客户检查汽车状态，若有漆面或玻璃等问题，和客户确认后再施工。'
+        : '确认提交吗？一旦提交不可更改！',
     async success({ confirm }) {
       if (confirm) {
         try {

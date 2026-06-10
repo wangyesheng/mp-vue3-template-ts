@@ -89,17 +89,7 @@ export function completeHandleAfterSaleRes(aftersale_id: number): Promise<any> {
   })
 }
 
-export function getInvoiceOverviewRes(month: string): Promise<IInvoiceOverviewInfo> {
-  return request({
-    url: '/api/invoice/overview',
-    method: 'get',
-    data: {
-      month,
-    },
-  })
-}
-
-export function getInvoiceListRes(data: IPageParams): Promise<IPageData<IInvoiceItem>> {
+export function getInvoiceListRes(data: IPageParams): Promise<IOrderItem[]> {
   return request({
     url: '/api/invoice/list',
     method: 'get',
@@ -135,7 +125,7 @@ export function getOrderSummaryRes(month: string): Promise<ISummaryInfo> {
   })
 }
 
-export function getOrderSummaryListRes(data: IPageParams): Promise<any> {
+export function getOrderSummaryListRes(data: IPageParams): Promise<IOrderItem[]> {
   return request({
     url: '/api/order/settle_list',
     method: 'get',

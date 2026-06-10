@@ -20,7 +20,6 @@
           v-for="item in invoiceTypes"
           :key="`${item.key}-${currentMonth}`"
           :title="item.label"
-          :pane-key="item.key"
         >
           <page-list
             :ref="(ref) => setPageListRef(item, ref)"
@@ -28,24 +27,46 @@
             :params="{ month: currentMonth, is_invoiced: item.key }"
             :active="checkedInvoiceTabKey == item.key"
             :render-type="item.key == 0 || item.key == 3 ? 'checkbox' : 'text'"
+            :item-key="(row: any) => `${row.id}-${currentMonth}`"
           >
             <template #item="{ data }">
-              <div class="order-card">
-                <div class="card-body">
-                  <div class="order-top">
-                    <span class="service-name">{{ data.service_name }}</span>
-                    <span class="order-total"> ¥ {{ data.total_amount }} </span>
+              <div class="order-summary-card">
+                <!-- 卡片顶部 -->
+                <div class="card-top">
+                  <div class="service-name-price">
+                    <span>
+                      {{ data?.service_name }}
+                    </span>
+                    <span class="total-price">¥ {{ data?.total_amount }}</span>
                   </div>
-                  <div class="order-mid">
-                    <span class="car-info">{{ data.vehicle_type }}</span>
-                    <div class="fee-tags">
-                      <span class="fee-tag">工时 ¥{{ data.hour_price }}</span>
-                      <span class="fee-tag reward">奖励 ¥{{ data.reward_price }}</span>
+                  <div class="card-footer">
+                    <div>{{ data?.vehicle_type }}</div>
+                    <div class="fee">总费用</div>
+                  </div>
+                </div>
+
+                <!-- 分隔线 -->
+                <div class="card-divider" />
+
+                <!-- 卡片底部 -->
+                <div class="card-bottom">
+                  <div class="fee-row">
+                    <div class="fee-item">
+                      <span class="fee-label">工时费</span>
+                      <span class="fee-value">¥{{ data?.hour_price }}</span>
+                    </div>
+                    <div class="fee-sep" />
+                    <div class="fee-item">
+                      <span class="fee-label">奖励金</span>
+                      <span class="fee-value">¥{{ data?.reward_price }}</span>
                     </div>
                   </div>
-                  <div class="order-bottom">
-                    <span>订单号：{{ data.order_sn }}</span>
-                    <span class="ml-1 text-[var(--uvt-primary-color)]" @click="copy(data.order_sn)">
+                  <div class="order-row">
+                    <span>订单号：{{ data?.order_sn }}</span>
+                    <span
+                      class="ml-1 text-[var(--uvt-primary-color)]"
+                      @click="copy(data?.order_sn!)"
+                    >
                       复制
                     </span>
                   </div>
@@ -89,7 +110,7 @@ const invoiceTypes = ref<InvoiceType[]>(
 )
 
 const currentMonth = ref(),
-  invoiceOverviewInfo = ref<Partial<IInvoiceOverviewInfo>>({}),
+  invoiceOverviewInfo = ref<Partial<ISummaryInfo>>({}),
   checkedInvoiceTabKey = ref(0)
 
 const currentInvoiceTab = computed(() => {
@@ -110,7 +131,7 @@ async function getInvoiceOverview() {
 }
 
 onShow(() => {
-  if (appStore.checkNeedRefresh()) {
+  if (appStore.checkNeedRefresh(false)) {
     getInvoiceOverview()
     currentInvoiceTab.value?.instance?.refresh()
   }
@@ -183,131 +204,6 @@ onPullDownRefresh(getInvoiceOverview)
     .stat-sub {
       font-size: 22rpx;
       color: #9ca3af;
-    }
-  }
-}
-
-.order-card {
-  display: flex;
-  gap: 20rpx;
-  align-items: flex-start;
-  padding: 28rpx;
-  background: #fff;
-  border: 2rpx solid transparent;
-  border-radius: 20rpx;
-  box-shadow: 0 4rpx 16rpx rgb(0 0 0 / 3%);
-  transition: all 0.2s;
-
-  &.selected {
-    border-color: #22c55e;
-    background: #f0fdf4;
-  }
-
-  &.invoiced-card {
-    display: block;
-    padding: 28rpx;
-  }
-
-  .card-left {
-    padding-top: 4rpx;
-    flex-shrink: 0;
-  }
-
-  .card-body {
-    flex: 1;
-
-    .order-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20rpx;
-
-      .service-name {
-        font-size: 30rpx;
-        font-weight: 700;
-        color: #1a1a2e;
-      }
-
-      .order-total {
-        font-size: 32rpx;
-        font-weight: 700;
-        color: #1a1a2e;
-      }
-    }
-
-    .order-mid {
-      display: flex;
-      gap: 8rpx;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20rpx;
-
-      .car-emoji {
-        font-size: 24rpx;
-      }
-
-      .car-info {
-        font-size: 26rpx;
-        color: #6b7280;
-      }
-    }
-
-    .fee-tags {
-      display: flex;
-      gap: 10rpx;
-
-      .fee-tag {
-        padding: 4rpx 12rpx;
-        font-size: 22rpx;
-        color: #22c55e;
-        background: #ebf9f0;
-        border-radius: 8rpx;
-
-        &.reward {
-          color: #f59e0b;
-          background: #fffbeb;
-        }
-      }
-    }
-
-    .order-bottom {
-      display: flex;
-      align-items: center;
-      font-size: 24rpx;
-      color: #9ca3af;
-    }
-
-    .invoice-info-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-top: 16rpx;
-      margin-top: 16rpx;
-      border-top: 1rpx dashed #e5e7eb;
-
-      .invoice-no-wrap {
-        display: flex;
-        gap: 8rpx;
-        align-items: center;
-
-        .invoice-icon {
-          font-size: 26rpx;
-        }
-
-        .invoice-no {
-          font-size: 26rpx;
-          color: #374151;
-        }
-      }
-
-      .invoiced-tag {
-        padding: 4rpx 14rpx;
-        font-size: 22rpx;
-        font-weight: 600;
-        color: #22c55e;
-        background: #dcfce7;
-        border-radius: 20rpx;
-      }
     }
   }
 }

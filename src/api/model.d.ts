@@ -29,6 +29,10 @@ interface IPageData<T> {
 interface IOrderItem {
   id: number
   hour_price: string
+  hour_price_settle: string | number
+  reward_price: string
+  reward_price_settle: string | number
+  total_amount: string
   order_sn: string
   product_name: string
   service_name: string
@@ -77,14 +81,6 @@ interface IAfterSaleInfo {
   [key: string]: any
 }
 
-interface IInvoiceOverviewInfo {
-  un_invoiced_amount: string
-  un_invoiced_count: number
-  invoiced_amount: number
-  invoiced_count: number
-  current_month: string
-}
-
 interface IInvoiceItem {
   id: number
   order_sn: string
@@ -104,9 +100,13 @@ interface IInvoiceApplyInfo {
   invoice_info: { label: string; value: string }[]
 }
 
-interface ISummaryInfo extends IInvoiceOverviewInfo {
+interface ISummaryInfo {
   total_amount: string
   hour_amount: string
   reward_amount: string
+  un_invoiced_amount: string
+  un_invoiced_count: number
+  invoiced_amount: number
+  invoiced_count: number
   current_month: string
 }

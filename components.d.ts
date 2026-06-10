@@ -48,6 +48,7 @@ declare module 'vue' {
     NutTabs: typeof import('nutui-uniapp/components/tabs/tabs.vue')['default']
     NutTag: typeof import('nutui-uniapp/components/tag/tag.vue')['default']
     NutToast: typeof import('nutui-uniapp/components/toast/toast.vue')['default']
+    OrderInfo: typeof import('./src/components/OrderInfo/index.vue')['default']
     PageList: typeof import('./src/components/PageList/index.vue')['default']
     Summary: typeof import('./src/components/Summary/index.vue')['default']
     WeappTailwindcss: typeof import('./src/components/WeappTailwindcss.vue')['default']

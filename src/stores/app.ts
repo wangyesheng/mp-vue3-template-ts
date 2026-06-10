@@ -32,9 +32,11 @@ export const useAppStore = defineStore('auth', () => {
   }
 
   /** 首页 onShow 调用：若为 true 则清空并返回 true，只消费一次 */
-  function checkNeedRefresh() {
+  function checkNeedRefresh(once = true) {
     if (!needRefresh.value) return false
-    needRefresh.value = false
+    if (once) {
+      needRefresh.value = false
+    }
     return true
   }
 

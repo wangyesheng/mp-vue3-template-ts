@@ -1,7 +1,7 @@
 <template>
   <view v-if="data?.length > 0" id="pageListWrap" class="page-list-wrap">
-    <view v-if="renderType == 'text'" class="page-inner">
-      <view v-for="(item, index) in data" :key="index" class="page-item">
+    <view v-if="renderType == 'text'" class="page-inner" :style="{ '--item-gap': `${gap}rpx` }">
+      <view v-for="item in data" :key="getItemKey(item)" :style="getPageItemStyle()">
         <slot name="item" :data="item" />
       </view>
     </view>
@@ -11,7 +11,7 @@
         :indeterminate="indeterminate"
         @change="onToggleSelectAll"
       >
-        <div class="flex items-center justify-between text-sm font-[550]">
+        <div class="mb-2 flex items-center justify-between text-sm font-[550]">
           <span>全选</span>
           <span class="text-xs text-[var(--uvt-primary-color)]">
             已选 {{ selectedKeys.length }} 项
@@ -19,7 +19,7 @@
         </div>
       </nut-checkbox>
       <nut-checkbox-group ref="checkboxGroupRef" v-model="selectedKeys" @change="onGroupChange">
-        <nut-checkbox v-for="(item, index) in data" :key="index" :label="item.id">
+        <nut-checkbox v-for="item in data" :key="getItemKey(item)" :label="item[primaryKey]">
           <slot name="item" :data="item" />
         </nut-checkbox>
       </nut-checkbox-group>
@@ -35,7 +35,7 @@
       <Loading position="absoluted" />
     </view>
   </view>
-  <view v-else class="relative py-[10vh]">
+  <view v-else class="relative py-[8vh]">
     <Loading v-if="pageInfo.loading" show-text position="absoluted" />
     <Empty v-else />
   </view>
@@ -57,17 +57,40 @@ interface PageListProps {
   active?: boolean
   params?: Q
   limit?: number
+  cols?: number
   contentFullHeight?: number
   renderType?: RenderType
+  primaryKey?: string
+  itemKey?: (item: T) => string | number
 }
 
 const props = withDefaults(defineProps<PageListProps>(), {
   active: false,
   params: () => ({}) as Q,
   limit: 10,
+  cols: 1,
   contentFullHeight: () => uni.getSystemInfoSync().windowHeight,
   renderType: 'text',
+  primaryKey: 'id',
 })
+
+function getItemKey(item: T) {
+  return props.itemKey ? props.itemKey(item) : item[props.primaryKey]
+}
+
+const gap = 20
+function getPageItemStyle() {
+  if (props.cols == 1) return { width: '100%' }
+
+  // 一行多列的情况下，需要计算(总宽度 - (总列数 - 1 * 间隔 gap)) / 总列数
+  // 假设一行三列，gap 设置的是 20，那么第一列与第二列有间隔，第二列与第三列有间隔，也就是总间隔为 2 * 20
+  // 即每列宽度就得以 (100% - (3 - 1 * 20)) / 3 => (100% - 40) / 3 => (100 / 3)% - 40 / 3
+  // 这里还有一个坑，就是假设单位换成 rpx 的话，那么 13.33333rpx 在小程序渲染的时候就会变成 6px，所以此处直接除 2 以 px 为单位
+  const rest = `${((props.cols - 1) * gap) / props.cols / 2}px`
+  return {
+    width: `calc(${100 / props.cols}% - ${rest})`,
+  }
+}
 
 const { appToken } = storeToRefs(useAppStore())
 
@@ -90,9 +113,9 @@ const pageInfo = ref({
 
 watch(
   () => props.active,
-  (newValue) => {
+  async (newValue) => {
     if (newValue && data.value.length === 0 && appToken.value) {
-      getData(1)
+      await getData(1)
     }
   },
   {

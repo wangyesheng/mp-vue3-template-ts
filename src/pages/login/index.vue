@@ -133,7 +133,7 @@ const login = debounce(async () => {
         height: 160rpx;
         margin-bottom: 40rpx;
         border-radius: 40rpx;
-        box-shadow: 0 20rpx 60rpx rgba(34, 197, 94, 0.2);
+        // box-shadow: 0 20rpx 60rpx rgba(34, 197, 94, 0.2);
       }
 
       .app-name {

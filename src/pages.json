@@ -8,9 +8,16 @@
       }
     },
     {
+      "path": "pages/settlement/index",
+      "style": {
+        "navigationBarTitleText": "结算明细",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
       "path": "pages/invoice/index",
       "style": {
-        "navigationBarTitleText": "待开发票",
+        "navigationBarTitleText": "发票管理",
         "enablePullDownRefresh": true
       }
     },
@@ -30,13 +37,6 @@
       "path": "pages/completion/index",
       "style": {
         "navigationBarTitleText": "施工完成确认"
-      }
-    },
-    {
-      "path": "pages/settlement/index",
-      "style": {
-        "navigationBarTitleText": "结算明细",
-        "enablePullDownRefresh": true
       }
     },
     {

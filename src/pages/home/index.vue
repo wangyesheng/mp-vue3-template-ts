@@ -35,7 +35,7 @@
             <div class="entry-info">
               <div class="entry-title">待开发票</div>
               <div class="entry-sub">
-                <span v-if="summaryInfo.un_invoiced_amount ?? 0 > 0">
+                <span v-if="summaryInfo.un_invoiced_count ?? 0 > 0">
                   本月有 {{ summaryInfo.un_invoiced_count }} 单待开票，点击前往处理
                 </span>
                 <span v-else>本月暂无发票待开，点击查看往期开票数据</span>
@@ -479,7 +479,7 @@ onPullDownRefresh(getOrderSummary)
       .detail-list {
         display: flex;
         flex-direction: column;
-        gap: 16rpx;
+        gap: 12rpx;
         padding: 24rpx;
         margin-bottom: 20rpx;
         background: #f8fafc;

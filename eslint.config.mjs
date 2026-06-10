@@ -74,6 +74,7 @@ export default icebreaker(
           alphabetical: false, // 不在每类内按字母排序
         },
       ],
+      'vue/prop-name-casing': 'off',
     },
   },
   // 必须放在最后，关闭所有与 Prettier 冲突的 ESLint 格式化规则
