@@ -66,9 +66,13 @@
       <view class="footer">
         <text class="privacy-text">
           登录即代表同意
-          <text class="privacy-link">《用户协议》</text>
+          <text class="privacy-link" @click="navTo(`/pages/login/richtext?type=1`)">
+            《用户协议》
+          </text>
           和
-          <text class="privacy-link">《隐私政策》</text>
+          <text class="privacy-link" @click="navTo(`/pages/login/richtext?type=2`)">
+            《隐私政策》
+          </text>
         </text>
       </view>
     </view>
@@ -79,6 +83,7 @@
 import { debounce } from 'es-toolkit'
 import { loginRes } from '@/api'
 import { useAppStore } from '@/stores/app'
+import { navTo } from '@/utils/uni'
 
 const appStore = useAppStore()
 

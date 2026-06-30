@@ -148,7 +148,7 @@
                       size="large"
                       @click="navTo(`/pages/after-sale/index?id=${data.aftersale_id}`)"
                     >
-                      {{ data.handle_status == 2 ? '查看售后' : '处理售后' }}
+                      {{ data.handle_status < 2 ? '处理售后' : '查看售后' }}
                     </nut-button>
                     <nut-tag v-if="data.aftersale_type == 2" round plain type="warning">
                       平台已更换新门店

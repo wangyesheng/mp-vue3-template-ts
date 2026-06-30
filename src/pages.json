@@ -8,6 +8,12 @@
       }
     },
     {
+      "path": "pages/login/richtext",
+      "style": {
+        "navigationBarTitleText": "用户协议"
+      }
+    },
+    {
       "path": "pages/settlement/index",
       "style": {
         "navigationBarTitleText": "结算明细",

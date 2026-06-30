@@ -132,3 +132,25 @@ export function getOrderSummaryListRes(data: IPageParams): Promise<IOrderItem[]>
     data,
   })
 }
+
+export function updatePasswordRes(data: IPasswordInfo): Promise<any> {
+  return request({
+    url: '/api/user/resetpwd',
+    method: 'post',
+    data,
+  })
+}
+
+export function getUserProtocolRes(): Promise<IOrderItem[]> {
+  return request({
+    url: '/api/index/user_agreement',
+    method: 'get',
+  })
+}
+
+export function getPrivateProtocolRes(): Promise<IOrderItem[]> {
+  return request({
+    url: '/api/index/privacy_agreement ',
+    method: 'get',
+  })
+}

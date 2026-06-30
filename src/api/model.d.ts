@@ -110,3 +110,9 @@ interface ISummaryInfo {
   invoiced_count: number
   current_month: string
 }
+
+interface IPasswordInfo {
+  oldpassword: string
+  newpassword: string
+  [key: string]: any
+}

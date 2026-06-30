@@ -4,31 +4,16 @@
       <view class="content">
         <view class="header">
           <text class="title">修改密码</text>
-          <text class="desc">请输入您的手机号和密码信息</text>
+          <text class="desc">请输入您的密码信息</text>
         </view>
 
         <view class="form">
           <view class="form-item">
             <view class="form-item__prefix">
-              <text class="i-mdi-cellphone-iphone text-[42rpx] text-[#333]"></text>
-            </view>
-            <nut-input
-              v-model="form.mobile"
-              type="number"
-              class="form-item__input"
-              placeholder="请输入手机号"
-              placeholder-class="input-placeholder"
-              :cursor-spacing="20"
-              :maxlength="11"
-            />
-          </view>
-
-          <view class="form-item">
-            <view class="form-item__prefix">
               <text class="i-mdi-lock-outline text-[42rpx] text-[#333]"></text>
             </view>
             <nut-input
-              v-model="form.oldPassword"
+              v-model="form.oldpassword"
               class="form-item__input"
               placeholder="请输入旧密码"
               placeholder-class="input-placeholder"
@@ -46,7 +31,7 @@
               <text class="i-mdi-lock text-[42rpx] text-[#333]"></text>
             </view>
             <nut-input
-              v-model="form.newPassword"
+              v-model="form.newpassword"
               class="form-item__input"
               placeholder="请输入新密码"
               placeholder-class="input-placeholder"
@@ -97,14 +82,14 @@
 <script setup lang="ts">
 import { debounce } from 'es-toolkit'
 import { useAppStore } from '@/stores/app'
-import test from '@/utils/test'
+import { toast } from '@/utils/uni'
+import { updatePasswordRes } from '@/api'
 
 const appStore = useAppStore()
 
-const form = ref({
-  mobile: '',
-  oldPassword: '',
-  newPassword: '',
+const form = ref<IPasswordInfo>({
+  oldpassword: '',
+  newpassword: '',
   confirmPassword: '',
 })
 
@@ -114,28 +99,16 @@ const showConfirmPassword = ref(false)
 const loading = ref(false)
 
 function validateForm() {
-  if (!form.value.mobile) {
-    uni.showToast({ title: '请输入手机号', icon: 'none' })
+  if (!form.value.oldpassword) {
+    toast('请输入旧密码')
     return false
   }
-  if (test.mobile(form.value.mobile)) {
-    uni.showToast({ title: '手机号格式不正确', icon: 'none' })
+  if (!form.value.newpassword) {
+    toast('请输入新密码')
     return false
   }
-  if (!form.value.oldPassword) {
-    uni.showToast({ title: '请输入旧密码', icon: 'none' })
-    return false
-  }
-  if (!form.value.newPassword) {
-    uni.showToast({ title: '请输入新密码', icon: 'none' })
-    return false
-  }
-  if (form.value.newPassword.length < 6) {
-    uni.showToast({ title: '新密码至少6位', icon: 'none' })
-    return false
-  }
-  if (form.value.newPassword !== form.value.confirmPassword) {
-    uni.showToast({ title: '两次密码不一致', icon: 'none' })
+  if (form.value.newpassword !== form.value.confirmPassword) {
+    toast('两次密码不一致')
     return false
   }
   return true
@@ -146,21 +119,15 @@ const handleSubmit = debounce(async () => {
 
   try {
     loading.value = true
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    uni.showToast({ title: '修改成功', icon: 'success' })
+    await updatePasswordRes(form.value)
+    toast('修改成功，3秒后将重定向到登录页')
     setTimeout(() => {
-      uni.navigateBack()
-    }, 1500)
+      appStore.logout()
+    }, 3000)
   } finally {
     loading.value = false
   }
 }, 500)
-
-onLoad(() => {
-  if (appStore.appUser?.mobile) {
-    form.value.mobile = appStore.appUser.mobile
-  }
-})
 </script>
 
 <style lang="scss" scoped>

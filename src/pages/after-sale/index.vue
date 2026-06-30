@@ -52,7 +52,8 @@
         </div>
       </nut-cell-group>
     </div>
-    <div v-if="afterSaleInfo.handle_status != 2" class="footer">
+
+    <div v-if="(afterSaleInfo.handle_status as number) < 2" class="footer">
       <div class="inner">
         <nut-button block custom-color="#1a1a2e" size="large" @click="onHandleAfterSale">
           {{ afterSaleInfo.handle_status == 0 ? '重新施工' : '确认完成' }}
@@ -154,6 +155,7 @@ onLoad(async ({ id }: { id?: string } = {}) => {
         display: block;
         width: 100%;
         height: 100%;
+        border-radius: 10rpx;
       }
     }
   }
